@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merger version="2" >
+
+    <dataSet config="main" >
+        <source path="C:\Users\Ben\AndroidStudioProjects\awesome-deadly-project-master\app\src\main\res" >
+            <file
+                name="ic_launcher"
+                path="C:\Users\Ben\AndroidStudioProjects\awesome-deadly-project-master\app\src\main\res\drawable\ic_launcher.png"
+                qualifiers=""
+                type="drawable" />
+            <file
+                name="main"
+                path="C:\Users\Ben\AndroidStudioProjects\awesome-deadly-project-master\app\src\main\res\layout\main.xml"
+                qualifiers=""
+                type="layout" />
+            <file
+                path="C:\Users\Ben\AndroidStudioProjects\awesome-deadly-project-master\app\src\main\res\values\strings.xml"
+                qualifiers="" >
+                <string name="app_name" >RAVING SHAPES
+                </string>
+                <string name="hello" >Hello, OpenGL ES 2.0!
+                </string>
+            </file>
+        </source>
+        <source path="C:\Users\Ben\AndroidStudioProjects\awesome-deadly-project-master\app\build\generated\res\rs\debug" />
+        <source path="C:\Users\Ben\AndroidStudioProjects\awesome-deadly-project-master\app\build\generated\res\generated\debug" />
+    </dataSet>
+    <dataSet config="debug" >
+        <source path="C:\Users\Ben\AndroidStudioProjects\awesome-deadly-project-master\app\src\debug\res" />
+    </dataSet>
+
+</merger>
