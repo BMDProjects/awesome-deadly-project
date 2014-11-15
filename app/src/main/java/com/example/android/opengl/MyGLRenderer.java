@@ -37,7 +37,11 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
 
     private static final String TAG = "MyGLRenderer";
     private Nchar mTriangle;
+<<<<<<< HEAD
     private Cube   mCube;
+=======
+    private Cube   mSquare;
+>>>>>>> ab207015e95c41478b673050146348355986fc1e
     private Triangle tri2;
 
     // mMVPMatrix is an abbreviation for "Model View Projection Matrix"
@@ -63,8 +67,15 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
         // Set the background frame color
         GLES20.glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 
+<<<<<<< HEAD
         mTriangle = new Nchar();
         mCube   = new Cube();
+=======
+
+
+        mTriangle = new Nchar();
+        mSquare   = new Cube();
+>>>>>>> ab207015e95c41478b673050146348355986fc1e
         mZoom = -4;
         loop = 2;
     }
@@ -127,20 +138,38 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
             sqAngle = sqAngle - 360; //reverse direction, slight misalignment
          }
 
+<<<<<<< HEAD
         /*  USE THIS INSTEAD FOR ANGLE ------------------------------------------------------
         long time = SystemClock.uptimeMillis() % 10000L;
         float angleInDegrees = (360.0f / 10000.0f) * ((int) time);
         */
+=======
+>>>>>>> ab207015e95c41478b673050146348355986fc1e
 
         //Initiialize and Translate
         Matrix.setIdentityM(sqScratch, 0);
         Matrix.translateM(sqScratch,  0, x, y, 0.0f);
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> ab207015e95c41478b673050146348355986fc1e
         //Matrix.setRotateM(mRotationMatrix, 0, mAngle, 0, 0, 1.0f);
 
         //M
 
+<<<<<<< HEAD
         // Calculate the projection and view transformation
+=======
+
+
+
+        // Calculate the projection and view transformation
+
+
+
+
+>>>>>>> ab207015e95c41478b673050146348355986fc1e
         Matrix.multiplyMM(mMVPMatrix, 0, sqScratch, 0, mViewMatrix, 0);
         Matrix.multiplyMM(mMVPMatrix, 0, mProjectionMatrix, 0, mMVPMatrix, 0);
 
@@ -149,8 +178,16 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
         //Matrix.multiplyMM(mMVPMatrix, 0, mMVPMatrix, 0, mRotationMatrix, 0);
         Matrix.multiplyMM(sqScratch, 0, mMVPMatrix, 0, mRotationMatrix, 0);
 
+<<<<<<< HEAD
         //mCube.drawThatWorks(sqScratch);
         mCube.draw2(sqScratch);
+=======
+
+
+
+        mSquare.draw(sqScratch);
+
+>>>>>>> ab207015e95c41478b673050146348355986fc1e
 
         // Combine the rotation matrix with the projection and camera view
         // Note that the mMVPMatrix factor *must be first* in order

@@ -2,8 +2,13 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
+<<<<<<< HEAD
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
       <module fileurl="file://$PROJECT_DIR$/awesome-deadly-project-master.iml" filepath="$PROJECT_DIR$/awesome-deadly-project-master.iml" />
+=======
+      <module fileurl="file://$PROJECT_DIR$/HelloOpenGLES20.iml" filepath="$PROJECT_DIR$/HelloOpenGLES20.iml" />
+      <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
+>>>>>>> ab207015e95c41478b673050146348355986fc1e
     </modules>
   </component>
 </project>
