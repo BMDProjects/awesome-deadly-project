@@ -1,11 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-<<<<<<< HEAD
     <!-- From: file:/C:/Users/Ben/AndroidStudioProjects/awesome-deadly-project-master/app/src/main/res/values/strings.xml -->
-=======
-    <!-- From: file:/users/ugrad/mulligde/AndroidStudioProjects/HelloOpenGLES20/app/src/main/res/values/strings.xml -->
->>>>>>> ab207015e95c41478b673050146348355986fc1e
     <eat-comment />
 
     <string name="app_name">RAVING SHAPES</string>
