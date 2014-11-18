@@ -39,23 +39,15 @@ public class MyGLSurfaceView extends GLSurfaceView {
         setRenderer(mRenderer);
 
         // Render the view only when there is a change in the drawing data
-<<<<<<< HEAD
-       // setRenderMode(GLSurfaceView.RENDERMODE_WHEN_DIRTY);
+        // setRenderMode(GLSurfaceView.RENDERMODE_WHEN_DIRTY);
         setRenderMode(GLSurfaceView.RENDERMODE_CONTINUOUSLY);
-=======
-        setRenderMode(GLSurfaceView.RENDERMODE_WHEN_DIRTY);
->>>>>>> ab207015e95c41478b673050146348355986fc1e
     }
 
     private final float TOUCH_SCALE_FACTOR = 90.0f / 320;
     private float mPreviousX;
     private float mPreviousY;
 
-<<<<<<< HEAD
    /* @Override
-=======
-    @Override
->>>>>>> ab207015e95c41478b673050146348355986fc1e
     public boolean onTouchEvent(MotionEvent e) {
         // MotionEvent reports input details from the touch screen
         // and other input controls. In this case, you are only
@@ -105,9 +97,5 @@ public class MyGLSurfaceView extends GLSurfaceView {
         mPreviousY = y;
         return true;
     }
-<<<<<<< HEAD
     */
-=======
-
->>>>>>> ab207015e95c41478b673050146348355986fc1e
 }
