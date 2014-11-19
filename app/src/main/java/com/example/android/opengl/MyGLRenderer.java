@@ -65,7 +65,7 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
 
         mTriangle = new Nchar();
         mCube   = new Cube();
-        mZoom = -4;
+        mZoom = -6;
         loop = 2;
     }
 
@@ -77,7 +77,6 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
         // Draw background color
         GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT | GLES20.GL_DEPTH_BUFFER_BIT);
 
-        long time = SystemClock.uptimeMillis() % 4000L;
         /*long zTime = time *2;
 
         //sets direction of decay/increase
@@ -94,17 +93,17 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
 
 
 
-        if (mZoom < -6)
+        if (mZoom < -8)
             toward6 = false;
-        if (mZoom > -4)
+        if (mZoom > -2)
             toward6 = true;
 
 
 
         if (toward6)
-            mZoom = mZoom - 0.1f;
+            mZoom = mZoom - 0.01f;
         else if (!toward6) {
-            mZoom = mZoom + 0.1f;
+            mZoom = mZoom + 0.01f;
 
         }
 
@@ -121,16 +120,18 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
         // Use the following code to generate constant rotation.
         // Leave this code out when using TouchEvents.
 
-        mAngle = 0.09f * ((int) time);
+       /* mAngle = 0.02f * ((int) time);
         float sqAngle= -2*(mAngle);
         if (sqAngle > 360){
             sqAngle = sqAngle - 360; //reverse direction, slight misalignment
-        }
-
-        /*  USE THIS INSTEAD FOR ANGLE ------------------------------------------------------
+        }*/
+        //float sqAngle = 30.0f;
+          //USE THIS INSTEAD FOR ANGLE ------------------------------------------------------
         long time = SystemClock.uptimeMillis() % 10000L;
-        float angleInDegrees = (360.0f / 10000.0f) * ((int) time);
-        */
+        float sqAngle = (360.0f / 10000.0f) * ((int) time);
+
+        // GLES20.glEnable(GLES20.GL_CULL_FACE);
+        //shows culling perfectly. culling is removing the backfaces of triangles
 
         //Initiialize and Translate
         Matrix.setIdentityM(sqScratch, 0);
@@ -145,12 +146,13 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
         Matrix.multiplyMM(mMVPMatrix, 0, mProjectionMatrix, 0, mMVPMatrix, 0);
 
 
-        Matrix.setRotateM(mRotationMatrix, 0, sqAngle, 1.0f, 0, 1.0f);
+        //Matrix.setRotateM(mRotationMatrix, 0, sqAngle, 1.0f, 0, 1.0f);
+        Matrix.setRotateM(mRotationMatrix, 0, sqAngle, 0.25f, 0, 1.0f);
         //Matrix.multiplyMM(mMVPMatrix, 0, mMVPMatrix, 0, mRotationMatrix, 0);
         Matrix.multiplyMM(sqScratch, 0, mMVPMatrix, 0, mRotationMatrix, 0);
 
         //mCube.drawThatWorks(sqScratch);
-        mCube.draw2(sqScratch);
+        mCube.draw3(sqScratch);
 
         // Combine the rotation matrix with the projection and camera view
         // Note that the mMVPMatrix factor *must be first* in order
