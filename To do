@@ -1,0 +1,12 @@
+1. Make 3d object. DONE
+2. Camera translation towards something function
+3. Camera look towards something function
+4. Distance function.
+5. find angle function in 3d???
+6. Blender or other 3d software
+7. fix clipping
+8. Big room that is completely viewable. with small cube inside it that camera follows
+9. Lighting in room and anywhere else possible.
+10. Function that easily puts camera in centre of cube.
+11. FUNCTIONS
+12. camera classes
