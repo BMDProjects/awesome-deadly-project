@@ -71,11 +71,9 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
 
 
     private static final String TAG = "MyGLRenderer";
-    private Nchar mTriangle;
     private Cube   mCube;
     private Cube   mCube2;
     private Cube   mCube3;
-    private Triangle tri2;
 
     // mMVPMatrix is an abbreviation for "Model View Projection Matrix"
     private final float[] mMVPMatrix = new float[16];
@@ -108,9 +106,6 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
     //private float[] mTempMatrix = new float[16];
 
     private float mAngle;
-    private float mZoom;
-    boolean toward6; //coming = true, going = false
-    int loop;
     float x = 0.0f;
     float y = 0.0f;
 
@@ -154,12 +149,9 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
         // Set the background frame color
         GLES20.glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 
-        mTriangle = new Nchar();
         mCube   = new Cube();
         mCube2 = new Cube();
         mCube3 = new Cube();
-        mZoom = -6;
-        loop = 2;
     }
 
     public void SetupText()
@@ -260,22 +252,6 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
         // Draw background color
         GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT | GLES20.GL_DEPTH_BUFFER_BIT);
 
-
-
-        /*if (mZoom < -8)
-            toward6 = false;
-        if (mZoom > -2)
-            toward6 = true;
-
-
-
-        if (toward6)
-            mZoom = mZoom - 0.01f;
-        else if (!toward6) {
-            mZoom = mZoom + 0.01f;
-
-        }*/
-
         theta += speed;
         eyeX = (float)(3.0f * Math.cos(theta)); //+ circle.cx;
         eyeZ = (float)(3.0f * Math.sin(theta)); //+ circle.cy;
@@ -284,8 +260,8 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
        // eyeX = 6.0f;
         eyeY = 6.0f;
         // Set the camera position (View matrix)
-        Matrix.setLookAtM(mViewMatrix, 0, eyeX, eyeY, eyeZ, 0f, 0f, 0f, 0f, 1.0f, 0.0f);
-        //Matrix.setLookAtM(mViewMatrix, 0, eyeX, eyeY, eyeZ, centerOfCubeEyeSpace[0], centerOfCubeEyeSpace[1], centerOfCubeEyeSpace[2], 0f, 1.0f, 0.0f);
+        //Matrix.setLookAtM(mViewMatrix, 0, eyeX, eyeY, eyeZ, 0f, 0f, 0f, 0f, 1.0f, 0.0f);
+        Matrix.setLookAtM(mViewMatrix, 0, eyeX, eyeY, eyeZ, centerOfCubeEyeSpace[0], centerOfCubeEyeSpace[1], centerOfCubeEyeSpace[2], 0f, 1.0f, 0.0f);
 
         // Use the following code to generate constant rotation.
         // Leave this code out when using TouchEvents.
@@ -325,7 +301,7 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
         Matrix.multiplyMV(centerOfCubeWorldSpace , 0, sqScratch, 0, centerOfCubeModelSpace , 0);
         Matrix.multiplyMM(mMVPMatrix, 0, mViewMatrix, 0, sqScratch, 0);
         Matrix.multiplyMM(mMVPMatrix, 0, mProjectionMatrix, 0, mMVPMatrix, 0);
-
+        centerOfCubeWorldSpace[0] += 0.01f;
 
         Matrix.multiplyMV(centerOfCubeEyeSpace , 0, mViewMatrix, 0, centerOfCubeWorldSpace , 0);
         mCube.draw3(mMVPMatrix, 1.0f);
