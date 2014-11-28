@@ -91,7 +91,7 @@ public class Cube {
 
 
 
-    private final float cubeScale = 1.0f;
+    //private final float cubeScale = 1.0f;
     private final FloatBuffer vertexBuffer;
     private final FloatBuffer colorBuffer;
     private final ShortBuffer drawListBuffer;
@@ -563,7 +563,7 @@ public class Cube {
         GLES20.glDisableVertexAttribArray(mPositionHandle);
     }
 
-    public void draw3(float[] mvpMatrix) {
+    public void draw3(float[] mvpMatrix, float cubeScale) {
 
         GLES20.glUseProgram(mProgram3);
         GLES20.glEnable(GLES20.GL_DEPTH_TEST);
@@ -596,11 +596,11 @@ public class Cube {
         //float[] scale = {1.3f,1.3f,1.3f};
         //float[] scale = {0.6f,0.6f,0.6f};
         //float[] scale = {0.4f,0.4f,0.4f};
-        //float[] scale = {0.8f,1.2f,0.6f};
+        //float[] scale = {0.8f,1.6f,0.6f};
         float[] scale = {cubeScale,cubeScale,cubeScale};
         Matrix.setIdentityM(scale_matrix, 0);
         Matrix.scaleM(scale_matrix, 0, scale[0], scale[1], scale[2]);
-        Matrix.multiplyMM(mvpMatrix, 0, scale_matrix, 0, mvpMatrix, 0);
+        Matrix.multiplyMM(mvpMatrix, 0, mvpMatrix , 0, scale_matrix, 0);
 
         // Pass in the combined matrix.
         GLES20.glUniformMatrix4fv(mMVPMatrixHandle, 1, false, mvpMatrix, 0);
