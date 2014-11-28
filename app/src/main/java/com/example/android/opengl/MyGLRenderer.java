@@ -284,8 +284,8 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
        // eyeX = 6.0f;
         eyeY = 6.0f;
         // Set the camera position (View matrix)
-        //Matrix.setLookAtM(mViewMatrix, 0, eyeX, eyeY, eyeZ, 0f, 0f, 0f, 0f, 1.0f, 0.0f);
-        Matrix.setLookAtM(mViewMatrix, 0, eyeX, eyeY, eyeZ, centerOfCubeEyeSpace[0], centerOfCubeEyeSpace[1], centerOfCubeEyeSpace[2], 0f, 1.0f, 0.0f);
+        Matrix.setLookAtM(mViewMatrix, 0, eyeX, eyeY, eyeZ, 0f, 0f, 0f, 0f, 1.0f, 0.0f);
+        //Matrix.setLookAtM(mViewMatrix, 0, eyeX, eyeY, eyeZ, centerOfCubeEyeSpace[0], centerOfCubeEyeSpace[1], centerOfCubeEyeSpace[2], 0f, 1.0f, 0.0f);
 
         // Use the following code to generate constant rotation.
         // Leave this code out when using TouchEvents.
