@@ -84,10 +84,15 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
     private final float[] centerOfCubeModelSpace = new float[] {0.0f, 0.0f, 0.0f, 1.0f};
     private final float[] centerOfCubeEyeSpace = new float[4];
     private final float[] centerOfCubeWorldSpace = new float[4];
+    final int pointsOnJourney = 100;
+
+    private float [] [] theJourney = new float [pointsOnJourney][3];
+    private short coord = 0;
 
     //double theta = 0.0;
     float theta = 0.0f;
     float speed = 0.01f;
+    float radius = 3.0f;
 
     float eyeX = 0.0f;
     float eyeY = 0.0f;
@@ -108,6 +113,8 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
     private float mAngle;
     float x = 0.0f;
     float y = 0.0f;
+
+    boolean reachedDestination = false;
 
     MyGLRenderer(Context context) {
         super();
@@ -152,6 +159,23 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
         mCube   = new Cube();
         mCube2 = new Cube();
         mCube3 = new Cube();
+
+        /*theJourney[0][0] = 15f;
+        theJourney[0][1] = -10f;
+        theJourney[0][2] = -10f;
+        theJourney[1][0] = -10f;
+        theJourney[1][1] = 10f;
+        theJourney[1][2] = 10f;
+        theJourney[2][0] = 25f;
+        theJourney[2][1] = 0f;
+        theJourney[2][2] = 0;*/
+
+        for(int i = 0; i < pointsOnJourney; i++){
+            for(int j = 0; j < 3; j++){
+                theJourney[i][j] = (float)(Math.random()*25);
+            }
+        }
+
     }
 
     public void SetupText()
@@ -253,15 +277,21 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
         GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT | GLES20.GL_DEPTH_BUFFER_BIT);
 
         theta += speed;
-        eyeX = (float)(3.0f * Math.cos(theta)); //+ circle.cx;
-        eyeZ = (float)(3.0f * Math.sin(theta)); //+ circle.cy;
-        //eyeY = (float)(3.0f * Math.sin(theta));
-       // eyeZ = 6.0f;
-       // eyeX = 6.0f;
+        if(radius > 6.0f) radius = radius - speed;
+        else radius = radius + speed;
+
+
+        //eyeX = (float)(3.0 * Math.cos(theta)); //+ circle.cx;
+        //eyeZ = (float)(radius * Math.sin(theta)); //+ circle.cy;
+       // eyeY = (float)(radius * Math.cos(theta));
+        eyeZ = 6.0f;
+        eyeX = 0.0f;
         eyeY = 6.0f;
         // Set the camera position (View matrix)
-        //Matrix.setLookAtM(mViewMatrix, 0, eyeX, eyeY, eyeZ, 0f, 0f, 0f, 0f, 1.0f, 0.0f);
-        Matrix.setLookAtM(mViewMatrix, 0, eyeX, eyeY, eyeZ, centerOfCubeEyeSpace[0], centerOfCubeEyeSpace[1], centerOfCubeEyeSpace[2], 0f, 1.0f, 0.0f);
+       // Matrix.setLookAtM(mViewMatrix, 0, eyeX, eyeY, eyeZ, 0f, 0f, 0f, 0f, 1.0f, 0.0f);
+        //Matrix.setLookAtM(mViewMatrix, 0, eyeX, eyeY, eyeZ, centerOfCubeEyeSpace[0], centerOfCubeEyeSpace[1], centerOfCubeEyeSpace[2], 0f, 1.0f, 0.0f);
+        //Matrix.setLookAtM(mViewMatrix, 0, eyeX, eyeY, eyeZ, centerOfCubeEyeSpace[0], centerOfCubeEyeSpace[1], centerOfCubeEyeSpace[2], 0f, 1.0f, 0.0f);
+        Matrix.setLookAtM(mViewMatrix, 0, eyeX, eyeY, eyeZ, centerOfCubeWorldSpace[0], centerOfCubeWorldSpace[1], centerOfCubeWorldSpace[2], 0f, 1.0f, 0.0f);
 
         // Use the following code to generate constant rotation.
         // Leave this code out when using TouchEvents.
@@ -273,10 +303,6 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
 
         // GLES20.glEnable(GLES20.GL_CULL_FACE);
         //shows culling perfectly. culling is removing the backfaces of triangles
-
-        Matrix.setIdentityM(scratch, 0);
-        Matrix.multiplyMM(mMVPMatrix, 0, scratch, 0, mViewMatrix, 0);
-        Matrix.multiplyMM(scratch, 0, mProjectionMatrix, 0, mMVPMatrix, 0);
 
         if(tm!=null) tm.Draw(scratch);
 
@@ -295,13 +321,20 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
       //  Matrix.setRotateM(mRotationMatrix, 0, sqAngle, 0.25f, 0, 1.0f);
      //   Matrix.multiplyMM(sqScratch, 0, mMVPMatrix, 0, mRotationMatrix, 0);
 
-        Matrix.translateM(sqScratch, 0, 0.0f, 0.0f, -5.0f);
-        Matrix.rotateM(sqScratch, 0, sqAngle, 0.0f, 1.0f, 0.0f);
-        Matrix.translateM(sqScratch, 0, 0.0f, 0.0f, 2.0f);
+        //Matrix.translateM(sqScratch, 0, 0.0f, 0.0f, -5.0f);
+        //Matrix.rotateM(sqScratch, 0, sqAngle, 0.0f, 1.0f, 0.0f);
+        //Matrix.translateM(sqScratch, 0, 0.0f, 0.0f, 2.0f);
+        Matrix.translateM(sqScratch, 0, centerOfCubeWorldSpace[0], centerOfCubeWorldSpace[1], centerOfCubeWorldSpace[2]);
         Matrix.multiplyMV(centerOfCubeWorldSpace , 0, sqScratch, 0, centerOfCubeModelSpace , 0);
+        reachedDestination = moveObject(centerOfCubeWorldSpace, theJourney[coord][0], theJourney[coord][1], theJourney[coord][2], 0.7f);
+        if(reachedDestination){
+            reachedDestination = false;
+            coord++;
+            if(coord > pointsOnJourney - 1) coord = 0;
+         }
         Matrix.multiplyMM(mMVPMatrix, 0, mViewMatrix, 0, sqScratch, 0);
         Matrix.multiplyMM(mMVPMatrix, 0, mProjectionMatrix, 0, mMVPMatrix, 0);
-        centerOfCubeWorldSpace[0] += 0.01f;
+
 
         Matrix.multiplyMV(centerOfCubeEyeSpace , 0, mViewMatrix, 0, centerOfCubeWorldSpace , 0);
         mCube.draw3(mMVPMatrix, 1.0f);
@@ -331,6 +364,53 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
         mCube3.draw3(sqScratch, 0.5f);
     }
 
+    private static boolean moveObject(float array[], float x, float y, float z, float speed) {
+        float epsilon = 0.5f;
+        double [] angles = new double [2];
+        angles = returnAngles(array[0], array[1], array[2], x, y, z);
+
+        array[0] += speed*Math.cos(angles[0]);
+        array[1] += speed*Math.sin(angles[0]);
+        array[2] += speed*Math.sin(angles[1]);
+
+        if(approxEqual(array[0], x, epsilon) && approxEqual(array[1], y, epsilon)
+                && approxEqual(array[2], z, epsilon)) return true;
+
+        return false;
+    }
+
+    private static double[] returnAngles(float x1, float y1, float z1, float x2, float y2, float z2)
+    {
+        float deltax = Math.abs((x2-x1));
+        float deltay = Math.abs((y2-y1));
+        float deltaz = Math.abs((z2-z1));
+
+        if (deltax == 0.0) deltax = 0.0001f;
+
+        float xySlope = deltay/deltax;
+        float xzSlope = deltaz/deltax;
+
+        double [] angles = new double [2];
+        angles[0] = Math.atan((double)xySlope);
+        angles[1] = Math.atan((double)xzSlope);
+
+        if(x2 >= x1 && y2 >= y1);
+        else if(x2 >= x1 && y2 < y1) angles[0] *= -1;
+        else if(x2 <= x1 && y2 < y1) angles[0] = Math.PI + angles[0];
+        else if(x2 < x1 && y2 >= y1) angles[0] = Math.PI - angles[0];
+
+        if(x2 >= x1 && z2 >= z1);
+        else if(x2 >= x1 && z2 < z1) angles[1] *= -1;
+        else if(x2 <= x1 && z2 < z1) angles[1] = Math.PI + angles[1];
+        else if(x2 < x1 && z2 >= z1) angles[1] = Math.PI - angles[1];
+        return angles;
+
+
+    }
+
+    public static boolean approxEqual(float x, float y, float eps){
+        return Math.abs(x-y)<eps;
+    }
     @Override
     public void onSurfaceChanged(GL10 unused, int width, int height) {
         // Adjust the viewport based on geometry changes,
