@@ -181,7 +181,7 @@ public class Shaders {
             + "   vec3 lightVector = normalize(u_LightPos - v_Position);             \n"
 
             //+ "if (dot(v_Normal, lightVector) < 0.0) { v_Normal = -v_Normal; }"
-                    + "if (dot(v_Normal, lightVector) < 0.0) {  float diffuse = dot(-v_Normal, lightVector); " +
+                    + "if (dot(v_Normal, lightVector) < 0.0) {  float diffuse = -dot(v_Normal, lightVector); " +
                     "                    gl_FragColor = v_Color * diffuse + 0.2; }"
                    + " else {  float diffuse = dot(v_Normal, lightVector); " +
                     "gl_FragColor = v_Color * diffuse + 0.2; } "

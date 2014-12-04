@@ -526,7 +526,7 @@ public class Cube {
         GLES20.glUniformMatrix4fv(mMVMatrixHandle, 1, false, mMVPMatrix, 0);
 
 
-       /* float[] scale_matrix = new float[16];
+        /*float[] scale_matrix = new float[16];
         float[] scale = {cubeScale,cubeScale,cubeScale};
         Matrix.setIdentityM(scale_matrix, 0);
         Matrix.scaleM(scale_matrix, 0, scale[0], scale[1], scale[2]);

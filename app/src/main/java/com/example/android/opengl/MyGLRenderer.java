@@ -46,6 +46,8 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
     float eyeY = 0.0f;
     float eyeZ = 0.0f;
 
+    private final float[] eyeXYZ = new float[] {0.0f, 0.0f, 0.0f, 1.0f};;
+
     final float lookX = 0.0f;
     final float lookY = 0.0f;
     final float lookZ = 0.0f;
@@ -116,19 +118,28 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
         if(radius > 6.0f) radius = radius - speed;
         else radius = radius + speed;
 
-
+        boolean reachedDestination2 = false;
+        reachedDestination2 = (moveObject(eyeXYZ, theJourney[coord][0] + 2.0f, theJourney[coord][1] + 3.5f, theJourney[coord][2], 0.1f));
+        if(reachedDestination2){
+            reachedDestination2 = false;
+            coord++;
+            if(coord > pointsOnJourney - 1) coord = 0;
+        }
         //eyeX = (float)(3.0 * Math.cos(theta)); //+ circle.cx;
         //eyeZ = (float)(radius * Math.sin(theta)); //+ circle.cy;
         // eyeY = (float)(radius * Math.cos(theta));
-        eyeZ = 6.0f;
-        eyeX = 0.0f;
-        eyeY = 6.0f;
+      //  eyeZ = 6.0f;
+      //  eyeX = 0.0f;
+     //   eyeY = 6.0f;
         // Set the camera position (View matrix)
         // Matrix.setLookAtM(mViewMatrix, 0, eyeX, eyeY, eyeZ, 0f, 0f, 0f, 0f, 1.0f, 0.0f);
         //Matrix.setLookAtM(mViewMatrix, 0, eyeX, eyeY, eyeZ, centerOfCubeEyeSpace[0], centerOfCubeEyeSpace[1], centerOfCubeEyeSpace[2], 0f, 1.0f, 0.0f);
         //Matrix.setLookAtM(mViewMatrix, 0, eyeX, eyeY, eyeZ, centerOfCubeEyeSpace[0], centerOfCubeEyeSpace[1], centerOfCubeEyeSpace[2], 0f, 1.0f, 0.0f);
-        Matrix.setLookAtM(mViewMatrix, 0, eyeX, eyeY, eyeZ, centerOfCubeWorldSpace[0], centerOfCubeWorldSpace[1], centerOfCubeWorldSpace[2], 0f, 1.0f, 0.0f);
-
+       // Matrix.setLookAtM(mViewMatrix, 0, eyeXYZ[0], eyeXYZ[1], eyeXYZ[2], centerOfCubeWorldSpace[0], centerOfCubeWorldSpace[1], centerOfCubeWorldSpace[2], 0f, 1.0f, 0.0f);
+        Matrix.setIdentityM(mViewMatrix, 0);
+      //  Matrix.setLookAtM(mViewMatrix, 0, eyeXYZ[0], eyeXYZ[1], eyeXYZ[2], 0.0f, 0.0f, 0.0f, 0f, 1.0f, 0.0f);
+        Matrix.setLookAtM(mViewMatrix, 0, eyeXYZ[0], eyeXYZ[1], eyeXYZ[2],  centerOfCubeWorldSpace[0], centerOfCubeWorldSpace[1], centerOfCubeWorldSpace[2], 0f, 1.0f, 0.0f);
+        //eyeXYZ[0] += speed;
         // Use the following code to generate constant rotation.
         // Leave this code out when using TouchEvents.
 
@@ -157,18 +168,21 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
         Matrix.translateM(sqScratch, 0, centerOfCubeWorldSpace[0], centerOfCubeWorldSpace[1], centerOfCubeWorldSpace[2]);
         Matrix.multiplyMV(centerOfCubeWorldSpace , 0, sqScratch, 0, centerOfCubeModelSpace , 0);
         Matrix.multiplyMV(centerOfCubeEyeSpace , 0, mViewMatrix, 0, centerOfCubeWorldSpace , 0);
-        reachedDestination = moveObject(centerOfCubeWorldSpace, theJourney[coord][0], theJourney[coord][1], theJourney[coord][2], 0.1f);
+        /*reachedDestination = moveObject(centerOfCubeWorldSpace, theJourney[coord + 1][0], theJourney[coord + 1][1], theJourney[coord + 1][2], 0.1f);
         if(reachedDestination){
             reachedDestination = false;
             coord++;
             if(coord > pointsOnJourney - 1) coord = 0;
-        }
+        }*/
+
+      // if( moveObject(centerOfCubeWorldSpace, theJourney[coord][0], theJourney[coord][1], theJourney[coord][2], 0.1f);)
+        //if( moveObject(eyeXYZ, 10.0f, 10.0f, 10.0f, 0.2f))
         //Matrix.multiplyMM(mMVPMatrix, 0, mViewMatrix, 0, sqScratch, 0);
        // Matrix.multiplyMM(mMVPMatrix, 0, mProjectionMatrix, 0, mMVPMatrix, 0);
 
 
 
-        mCube.draw5(sqScratch, 8.0f);
+        mCube.draw5(sqScratch, 1.0f);
         //mCube.draw3(sqScratch, 1.0f);
         //  Matrix.multiplyMV(mLightPosInWorldSpace, 0, sqScratch, 0, mLightPosInModelSpace, 0);
         // Matrix.multiplyMV(mLightPosInEyeSpace, 0, mViewMatrix, 0, mLightPosInWorldSpace, 0);
@@ -258,10 +272,10 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
         final float bottom = -1.0f;
         final float top = 1.0f;
         final float near = 1.0f;
-        final float far = 10.0f;
+        final float far = 160.0f;
 
-        // Matrix.frustumM(mProjectionMatrix, 0, left, right, bottom, top, near, far);
-        Matrix.frustumM(mProjectionMatrix, 0, left, right, -1, 1, 1, 100);
+         Matrix.frustumM(mProjectionMatrix, 0, left, right, bottom, top, near, far);
+       // Matrix.frustumM(mProjectionMatrix, 0, left, right, -1, 1, 1, 100);
     }
 
     /**
