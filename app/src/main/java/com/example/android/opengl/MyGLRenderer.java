@@ -72,6 +72,11 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
         //GLES20.glEnable(GLES20.GL_BLEND);
        // GLES20.glBlendFunc(GLES20.GL_ONE, GLES20.GL_ONE_MINUS_SRC_ALPHA);B
         //GLES20.glEnable(GLES20.GL_NORMALIZE);
+        GLES20.glEnable(GLES20.GL_DEPTH_TEST);
+        //unused.glEnable(GL_RESCALE_NORMAL);
+        GLES20.glEnable(GLES20.GL_VERTEX_ATTRIB_ARRAY_NORMALIZED);
+       // GLES20.glLightModeli(GL_LIGHT_MODEL_TWO_SIDE, GL_TRUE);
+       // unused.glLightModeli(GL_LIGHT_MODEL_TWO_SIDE, GL_TRUE);
 
         // Set the background frame color
         GLES20.glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
@@ -135,7 +140,7 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
 
         // Calculate position of the light. Rotate and then push into the distance.
         Matrix.setIdentityM(light1.mLightModelMatrix, 0);
-        Matrix.translateM(light1.mLightModelMatrix, 0, 0.0f, 0.0f, -5.0f);
+        Matrix.translateM(light1.mLightModelMatrix, 0, 0.0f, 0.0f, -2.0f);
         Matrix.rotateM(light1.mLightModelMatrix, 0, sqAngle, 0.0f, 1.0f, 0.0f);
         Matrix.translateM(light1.mLightModelMatrix, 0, 0.0f, 0.0f, 2.0f);
 
@@ -163,18 +168,24 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
 
 
 
-        mCube.draw4(sqScratch, 1.0f);
+        mCube.draw5(sqScratch, 8.0f);
         //mCube.draw3(sqScratch, 1.0f);
         //  Matrix.multiplyMV(mLightPosInWorldSpace, 0, sqScratch, 0, mLightPosInModelSpace, 0);
         // Matrix.multiplyMV(mLightPosInEyeSpace, 0, mViewMatrix, 0, mLightPosInWorldSpace, 0);
 
         //cube 2
+        float[] scale_matrix = new float[16];
         Matrix.setIdentityM(sqScratch, 0);
-        Matrix.translateM(sqScratch,  0, 0.0f, 0.0f, 0.0f);
-        Matrix.multiplyMM(mMVPMatrix, 0, sqScratch, 0, mViewMatrix, 0);
-        Matrix.multiplyMM(mMVPMatrix, 0, mProjectionMatrix, 0, mMVPMatrix, 0);
+        /*Matrix.setIdentityM(scale_matrix, 0);
+        float[] scale = {50.0f,50.0f,50.0f};
+        Matrix.scaleM(scale_matrix, 0, scale[0], scale[1], scale[2]);
 
-        mCube2.draw4(mMVPMatrix, 50.0f);
+        Matrix.multiplyMM(sqScratch, 0, sqScratch , 0, scale_matrix, 0);*/
+       // Matrix.translateM(sqScratch,  0, 0.0f, 0.0f, 0.0f);
+       // Matrix.multiplyMM(mMVPMatrix, 0, sqScratch, 0, mViewMatrix, 0);
+      //  Matrix.multiplyMM(mMVPMatrix, 0, mProjectionMatrix, 0, mMVPMatrix, 0);
+
+        mCube2.draw5(sqScratch, 50.0f);
 
 
         //cube 3
