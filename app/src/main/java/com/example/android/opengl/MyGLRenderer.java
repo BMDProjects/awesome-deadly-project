@@ -20,6 +20,7 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
     private Cube   mCube;
     private Cube   mCube2;
     private Cube   mCube3;
+    private Cube   centreCube;
 
     //has to be public because cube has to access it
     public static Light light1;
@@ -37,6 +38,10 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
 
     private float [] [] theJourney = new float [pointsOnJourney][3];
     private short coord = 0;
+
+    double alpha = 0.0f;
+    double beta;
+
 
     float theta = 0.0f;
     float speed = 0.01f;
@@ -86,6 +91,7 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
         mCube   = new Cube();
         mCube2 = new Cube();
         mCube3 = new Cube();
+        centreCube = new Cube();
 
         light1 = new Light();
 
@@ -101,7 +107,10 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
 
         for(int i = 0; i < pointsOnJourney; i++){
             for(int j = 0; j < 3; j++){
-                theJourney[i][j] = (float)(Math.random()*50) - 25.0f;
+                //theJourney[i][j] = (float)(Math.random()*50) - 25.0f;
+                theJourney[i][j] = (float)(Math.random()*90) - 45.0f;
+                if (theJourney[i][j] <= 20 && theJourney[i][j] >= 0) theJourney[i][j] += 21.0f;
+                else if (theJourney[i][j] >= -20 && theJourney[i][j] <= 0) theJourney[i][j] -= 21.0f;
             }
         }
     }
@@ -119,26 +128,24 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
         else radius = radius + speed;
 
         boolean reachedDestination2 = false;
-        reachedDestination2 = (moveObject(eyeXYZ, theJourney[coord][0] + 2.0f, theJourney[coord][1] + 3.5f, theJourney[coord][2], 0.1f));
+       /* reachedDestination2 = (moveObject(eyeXYZ, theJourney[coord][0] + 2.0f, theJourney[coord][1] + 2.0f, theJourney[coord][2], 0.1f));
         if(reachedDestination2){
             reachedDestination2 = false;
-            coord++;
+            //coord++;
             if(coord > pointsOnJourney - 1) coord = 0;
-        }
+        }*/
         //eyeX = (float)(3.0 * Math.cos(theta)); //+ circle.cx;
         //eyeZ = (float)(radius * Math.sin(theta)); //+ circle.cy;
         // eyeY = (float)(radius * Math.cos(theta));
-      //  eyeZ = 6.0f;
-      //  eyeX = 0.0f;
-     //   eyeY = 6.0f;
+        eyeZ = 30.0f;
+        eyeX = 30.0f;
+        eyeY = 25.0f;
         // Set the camera position (View matrix)
         // Matrix.setLookAtM(mViewMatrix, 0, eyeX, eyeY, eyeZ, 0f, 0f, 0f, 0f, 1.0f, 0.0f);
-        //Matrix.setLookAtM(mViewMatrix, 0, eyeX, eyeY, eyeZ, centerOfCubeEyeSpace[0], centerOfCubeEyeSpace[1], centerOfCubeEyeSpace[2], 0f, 1.0f, 0.0f);
-        //Matrix.setLookAtM(mViewMatrix, 0, eyeX, eyeY, eyeZ, centerOfCubeEyeSpace[0], centerOfCubeEyeSpace[1], centerOfCubeEyeSpace[2], 0f, 1.0f, 0.0f);
-       // Matrix.setLookAtM(mViewMatrix, 0, eyeXYZ[0], eyeXYZ[1], eyeXYZ[2], centerOfCubeWorldSpace[0], centerOfCubeWorldSpace[1], centerOfCubeWorldSpace[2], 0f, 1.0f, 0.0f);
-        Matrix.setIdentityM(mViewMatrix, 0);
+        Matrix.setLookAtM(mViewMatrix, 0, eyeX, eyeY, eyeZ, centerOfCubeWorldSpace[0], centerOfCubeWorldSpace[1], centerOfCubeWorldSpace[2], 0f, 1.0f, 0.0f);
+       // Matrix.setIdentityM(mViewMatrix, 0);
       //  Matrix.setLookAtM(mViewMatrix, 0, eyeXYZ[0], eyeXYZ[1], eyeXYZ[2], 0.0f, 0.0f, 0.0f, 0f, 1.0f, 0.0f);
-        Matrix.setLookAtM(mViewMatrix, 0, eyeXYZ[0], eyeXYZ[1], eyeXYZ[2],  centerOfCubeWorldSpace[0], centerOfCubeWorldSpace[1], centerOfCubeWorldSpace[2], 0f, 1.0f, 0.0f);
+        //Matrix.setLookAtM(mViewMatrix, 0, eyeXYZ[0], eyeXYZ[1], eyeXYZ[2],  centerOfCubeWorldSpace[0], centerOfCubeWorldSpace[1], centerOfCubeWorldSpace[2], 0f, 1.0f, 0.0f);
         //eyeXYZ[0] += speed;
         // Use the following code to generate constant rotation.
         // Leave this code out when using TouchEvents.
@@ -162,18 +169,36 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
         Matrix.multiplyMM(mMVPMatrix, 0, mProjectionMatrix, 0, mMVPMatrix, 0);
         light1.drawLight(mMVPMatrix);
 
-        //Initiialize and Translate
+
+
+        boolean reachedAngle = false;
         Matrix.setIdentityM(sqScratch, 0);
         Matrix.setIdentityM(mMVPMatrix, 0);
-        Matrix.translateM(sqScratch, 0, centerOfCubeWorldSpace[0], centerOfCubeWorldSpace[1], centerOfCubeWorldSpace[2]);
+        //Matrix.translateM(sqScratch, 0, 0.0f, 0.0f, 0.0f);
+        /*reachedAngle = rotateObject(centerOfCubeWorldSpace, sqScratch, theJourney[coord][0], theJourney[coord][1], theJourney[coord][2], 0.1f, alpha, beta);
+        if (reachedAngle) {
+            reachedAngle = false;
+            alpha = 0.0f;
+        }*/
+        final float[] rotationMatrix= new float[16];
+        Matrix.setIdentityM(rotationMatrix, 0);
+        Matrix.setRotateM(rotationMatrix, 0, sqAngle, 0.0f, 1.0f, 0.0f);
+        Matrix.multiplyMM(sqScratch, 0, sqScratch, 0, rotationMatrix, 0);
+
+        //Matrix.translateM(sqScratch, 0, centerOfCubeWorldSpace[0], centerOfCubeWorldSpace[1], centerOfCubeWorldSpace[2]);
+
+        
+        //FOR GOD SAKE MAKE A FUNCTION GIVE COORDINATES, ROTATION, SCALE,
+
+
         Matrix.multiplyMV(centerOfCubeWorldSpace , 0, sqScratch, 0, centerOfCubeModelSpace , 0);
         Matrix.multiplyMV(centerOfCubeEyeSpace , 0, mViewMatrix, 0, centerOfCubeWorldSpace , 0);
-        /*reachedDestination = moveObject(centerOfCubeWorldSpace, theJourney[coord + 1][0], theJourney[coord + 1][1], theJourney[coord + 1][2], 0.1f);
+        reachedDestination = moveObject(centerOfCubeWorldSpace, theJourney[coord][0], theJourney[coord][1], theJourney[coord][2], 0.1f);
         if(reachedDestination){
             reachedDestination = false;
             coord++;
             if(coord > pointsOnJourney - 1) coord = 0;
-        }*/
+        }
 
       // if( moveObject(centerOfCubeWorldSpace, theJourney[coord][0], theJourney[coord][1], theJourney[coord][2], 0.1f);)
         //if( moveObject(eyeXYZ, 10.0f, 10.0f, 10.0f, 0.2f))
@@ -203,16 +228,19 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
 
 
         //cube 3
-        Matrix.setIdentityM(sqScratch, 0);
+       /* Matrix.setIdentityM(sqScratch, 0);
         Matrix.setIdentityM(mMVPMatrix, 0);
         Matrix.translateM(sqScratch,  0, 0.0f, 0.0f, 0.0f);
-        Matrix.multiplyMM(mMVPMatrix, 0, sqScratch, 0, mViewMatrix, 0);
-        Matrix.multiplyMM(mMVPMatrix, 0, mProjectionMatrix, 0, mMVPMatrix, 0);
+
 
         Matrix.setRotateM(mRotationMatrix, 0, sqAngle, 0.5f, 0.3f, 1.0f);
         //Matrix.multiplyMM(mMVPMatrix, 0, mMVPMatrix, 0, mRotationMatrix, 0);
         Matrix.multiplyMM(sqScratch, 0, mMVPMatrix, 0, mRotationMatrix, 0);
-        mCube3.draw3(sqScratch, 0.5f);
+        mCube3.draw3(sqScratch, 0.5f);*/
+
+        Matrix.setIdentityM(sqScratch, 0);
+        Matrix.setIdentityM(mMVPMatrix, 0);
+        centreCube.draw5(sqScratch, 20.0f);
     }
 
     private static boolean moveObject(float coordinates[], float x, float y, float z, float speed) {
@@ -226,6 +254,33 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
 
         if(approxEqual(coordinates[0], x, epsilon) && approxEqual(coordinates[1], y, epsilon)
                 && approxEqual(coordinates[2], z, epsilon)) return true;
+
+        return false;
+    }
+
+    private static boolean rotateObject(float coordinates[],float[] modelMatrix, float destX, float destY, float destZ, float angularSpeed, double alpha, double beta) {
+        double epsilon = 0.3f;
+        double [] angles = new double [2];
+        angles = returnAngles(coordinates[0], coordinates[1], coordinates[2], destX, destY, destZ);
+
+        alpha += angularSpeed;
+        beta = angles[1];
+
+        final float[] rotationMatrix= new float[16];
+        Matrix.setIdentityM(rotationMatrix, 0);
+        Matrix.setRotateM(rotationMatrix, 0, (float)alpha, 0.0f, 1.0f, 0.0f);
+        Matrix.multiplyMM(modelMatrix, 0, rotationMatrix, 0, modelMatrix, 0);
+
+
+        if (approxEqual(alpha, Math.PI - beta, epsilon)) return true;
+
+        //if (true) angularSpeed -= 1;
+        /*coordinates[0] += speed*Math.cos(angles[0]);
+        coordinates[1] += speed*Math.sin(angles[0]);
+        coordinates[2] += speed*Math.sin(angles[1]);
+
+        if(approxEqual(coordinates[0], x, epsilon) && approxEqual(coordinates[1], y, epsilon)
+                && approxEqual(coordinates[2], z, epsilon)) return true;*/
 
         return false;
     }
@@ -260,6 +315,11 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
     public static boolean approxEqual(float x, float y, float eps){
         return Math.abs(x-y)<eps;
     }
+
+    public static boolean approxEqual(double x, double y, double eps){
+        return Math.abs(x-y)<eps;
+    }
+
     @Override
     public void onSurfaceChanged(GL10 unused, int width, int height) {
         // Adjust the viewport based on geometry changes,

@@ -573,11 +573,11 @@ public class Cube {
                 0, mCubeNormals);
         GLES20.glEnableVertexAttribArray(mNormalHandle);
 
-        float[] scale_matrix = new float[16];
+        /*float[] scale_matrix = new float[16];
         float[] scale = {cubeScale,cubeScale,cubeScale};
         Matrix.setIdentityM(scale_matrix, 0);
         Matrix.scaleM(scale_matrix, 0, scale[0], scale[1], scale[2]);
-        Matrix.multiplyMM(modelMatrix, 0, modelMatrix , 0, scale_matrix, 0);
+        Matrix.multiplyMM(modelMatrix, 0, modelMatrix , 0, scale_matrix, 0);*/
 
        /* float[] scale_matrix = new float[16];
         float[] scale = {cubeScale,cubeScale,cubeScale};
