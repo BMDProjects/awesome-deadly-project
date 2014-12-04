@@ -1,72 +1,102 @@
-/*
- * Copyright (C) 2011 The Android Open Source Project
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package com.example.android.opengl;
 
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.opengl.GLES20;
 import android.opengl.GLSurfaceView;
 import android.opengl.Matrix;
 import android.os.SystemClock;
 import android.util.Log;
+import android.content.Context;
+import java.lang.Math;
 
-/**
- * Provides drawing instructions for a GLSurfaceView object. This class
- * must override the OpenGL ES drawing lifecycle methods:
- * <ul>
- *   <li>{@link android.opengl.GLSurfaceView.Renderer#onSurfaceCreated}</li>
- *   <li>{@link android.opengl.GLSurfaceView.Renderer#onDrawFrame}</li>
- *   <li>{@link android.opengl.GLSurfaceView.Renderer#onSurfaceChanged}</li>
- * </ul>
- */
 public class MyGLRenderer implements GLSurfaceView.Renderer {
+    Context mContext;
 
     private static final String TAG = "MyGLRenderer";
-    private Nchar mTriangle;
     private Cube   mCube;
-    private Triangle tri2;
+    private Cube   mCube2;
+    private Cube   mCube3;
+
+    //has to be public because cube has to access it
+    public static Light light1;
 
     // mMVPMatrix is an abbreviation for "Model View Projection Matrix"
     private final float[] mMVPMatrix = new float[16];
-    private final float[] mProjectionMatrix = new float[16];
-    private final float[] mViewMatrix = new float[16];
+    public static final float[] mProjectionMatrix = new float[16];
+    public static final float[] mViewMatrix = new float[16];
     private final float[] mRotationMatrix= new float[16];
 
+    private final float[] centerOfCubeModelSpace = new float[] {0.0f, 0.0f, 0.0f, 1.0f};
+    private final float[] centerOfCubeEyeSpace = new float[4];
+    private final float[] centerOfCubeWorldSpace = new float[4];
+    final int pointsOnJourney = 100;
 
+    private float [] [] theJourney = new float [pointsOnJourney][3];
+    private short coord = 0;
+
+    float theta = 0.0f;
+    float speed = 0.01f;
+    float radius = 3.0f;
+
+    float eyeX = 0.0f;
+    float eyeY = 0.0f;
+    float eyeZ = 0.0f;
+
+    final float lookX = 0.0f;
+    final float lookY = 0.0f;
+    final float lookZ = 0.0f;
+
+    final float upX = 0.0f;
+    final float upY = 1.0f;
+    final float upZ = 0.0f;
 
     //private float[] mTempMatrix = new float[16];
 
     private float mAngle;
-    private float mZoom;
-    boolean toward6; //coming = true, going = false
-    int loop;
     float x = 0.0f;
     float y = 0.0f;
 
+    boolean reachedDestination = false;
+
+    MyGLRenderer(Context context) {
+        super();
+        mContext = context;
+    }
+
     @Override
     public void onSurfaceCreated(GL10 unused, EGLConfig config) {
+        //GLES20.glEnable(GLES20.GL_BLEND);
+       // GLES20.glBlendFunc(GLES20.GL_ONE, GLES20.GL_ONE_MINUS_SRC_ALPHA);B
+        //GLES20.glEnable(GLES20.GL_NORMALIZE);
 
         // Set the background frame color
         GLES20.glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 
-        mTriangle = new Nchar();
         mCube   = new Cube();
-        mZoom = -6;
-        loop = 2;
+        mCube2 = new Cube();
+        mCube3 = new Cube();
+
+        light1 = new Light();
+
+        /*theJourney[0][0] = 15f;
+        theJourney[0][1] = -10f;
+        theJourney[0][2] = -10f;
+        theJourney[1][0] = -10f;
+        theJourney[1][1] = 10f;
+        theJourney[1][2] = 10f;
+        theJourney[2][0] = 25f;
+        theJourney[2][1] = 0f;
+        theJourney[2][2] = 0;*/
+
+        for(int i = 0; i < pointsOnJourney; i++){
+            for(int j = 0; j < 3; j++){
+                theJourney[i][j] = (float)(Math.random()*50) - 25.0f;
+            }
+        }
     }
 
     @Override
@@ -77,105 +107,150 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
         // Draw background color
         GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT | GLES20.GL_DEPTH_BUFFER_BIT);
 
-        /*long zTime = time *2;
-
-        //sets direction of decay/increase
-        if (zTime 3995== ){
-            loop += 1;
-        }
-
-        if (loop%2 == 1)
-            mZoom = -(zTime * .0005f) - 4f;
-        else
-            mZoom = +(zTime * .0005f) - 6f;
-
-        */
+        theta += speed;
+        if(radius > 6.0f) radius = radius - speed;
+        else radius = radius + speed;
 
 
-
-        if (mZoom < -8)
-            toward6 = false;
-        if (mZoom > -2)
-            toward6 = true;
-
-
-
-        if (toward6)
-            mZoom = mZoom - 0.01f;
-        else if (!toward6) {
-            mZoom = mZoom + 0.01f;
-
-        }
-
-
+        //eyeX = (float)(3.0 * Math.cos(theta)); //+ circle.cx;
+        //eyeZ = (float)(radius * Math.sin(theta)); //+ circle.cy;
+        // eyeY = (float)(radius * Math.cos(theta));
+        eyeZ = 6.0f;
+        eyeX = 0.0f;
+        eyeY = 6.0f;
         // Set the camera position (View matrix)
-        Matrix.setLookAtM(mViewMatrix, 0, 0, 0, mZoom, 0f, 0f, 0f, 0f, 2.0f, 0.0f);
-
-
-
-
-
-
+        // Matrix.setLookAtM(mViewMatrix, 0, eyeX, eyeY, eyeZ, 0f, 0f, 0f, 0f, 1.0f, 0.0f);
+        //Matrix.setLookAtM(mViewMatrix, 0, eyeX, eyeY, eyeZ, centerOfCubeEyeSpace[0], centerOfCubeEyeSpace[1], centerOfCubeEyeSpace[2], 0f, 1.0f, 0.0f);
+        //Matrix.setLookAtM(mViewMatrix, 0, eyeX, eyeY, eyeZ, centerOfCubeEyeSpace[0], centerOfCubeEyeSpace[1], centerOfCubeEyeSpace[2], 0f, 1.0f, 0.0f);
+        Matrix.setLookAtM(mViewMatrix, 0, eyeX, eyeY, eyeZ, centerOfCubeWorldSpace[0], centerOfCubeWorldSpace[1], centerOfCubeWorldSpace[2], 0f, 1.0f, 0.0f);
 
         // Use the following code to generate constant rotation.
         // Leave this code out when using TouchEvents.
 
-       /* mAngle = 0.02f * ((int) time);
-        float sqAngle= -2*(mAngle);
-        if (sqAngle > 360){
-            sqAngle = sqAngle - 360; //reverse direction, slight misalignment
-        }*/
         //float sqAngle = 30.0f;
-          //USE THIS INSTEAD FOR ANGLE ------------------------------------------------------
+        //USE THIS INSTEAD FOR ANGLE ------------------------------------------------------
         long time = SystemClock.uptimeMillis() % 10000L;
         float sqAngle = (360.0f / 10000.0f) * ((int) time);
 
-        // GLES20.glEnable(GLES20.GL_CULL_FACE);
-        //shows culling perfectly. culling is removing the backfaces of triangles
+
+        // Calculate position of the light. Rotate and then push into the distance.
+        Matrix.setIdentityM(light1.mLightModelMatrix, 0);
+        Matrix.translateM(light1.mLightModelMatrix, 0, 0.0f, 0.0f, -5.0f);
+        Matrix.rotateM(light1.mLightModelMatrix, 0, sqAngle, 0.0f, 1.0f, 0.0f);
+        Matrix.translateM(light1.mLightModelMatrix, 0, 0.0f, 0.0f, 2.0f);
+
+        Matrix.multiplyMV(light1.mLightPosInWorldSpace, 0, light1.mLightModelMatrix, 0, light1.mLightPosInModelSpace, 0);
+        Matrix.multiplyMV(light1.mLightPosInEyeSpace, 0, mViewMatrix, 0, light1.mLightPosInWorldSpace, 0);
+
+        Matrix.multiplyMM(mMVPMatrix, 0, mViewMatrix, 0, light1.mLightModelMatrix, 0);
+        Matrix.multiplyMM(mMVPMatrix, 0, mProjectionMatrix, 0, mMVPMatrix, 0);
+        light1.drawLight(mMVPMatrix);
 
         //Initiialize and Translate
         Matrix.setIdentityM(sqScratch, 0);
-        Matrix.translateM(sqScratch,  0, x, y, 0.0f);
+        Matrix.setIdentityM(mMVPMatrix, 0);
+        Matrix.translateM(sqScratch, 0, centerOfCubeWorldSpace[0], centerOfCubeWorldSpace[1], centerOfCubeWorldSpace[2]);
+        Matrix.multiplyMV(centerOfCubeWorldSpace , 0, sqScratch, 0, centerOfCubeModelSpace , 0);
+        Matrix.multiplyMV(centerOfCubeEyeSpace , 0, mViewMatrix, 0, centerOfCubeWorldSpace , 0);
+        reachedDestination = moveObject(centerOfCubeWorldSpace, theJourney[coord][0], theJourney[coord][1], theJourney[coord][2], 0.1f);
+        if(reachedDestination){
+            reachedDestination = false;
+            coord++;
+            if(coord > pointsOnJourney - 1) coord = 0;
+        }
+        //Matrix.multiplyMM(mMVPMatrix, 0, mViewMatrix, 0, sqScratch, 0);
+       // Matrix.multiplyMM(mMVPMatrix, 0, mProjectionMatrix, 0, mMVPMatrix, 0);
 
-        //Matrix.setRotateM(mRotationMatrix, 0, mAngle, 0, 0, 1.0f);
 
-        //M
 
-        // Calculate the projection and view transformation
+        mCube.draw4(sqScratch, 1.0f);
+        //mCube.draw3(sqScratch, 1.0f);
+        //  Matrix.multiplyMV(mLightPosInWorldSpace, 0, sqScratch, 0, mLightPosInModelSpace, 0);
+        // Matrix.multiplyMV(mLightPosInEyeSpace, 0, mViewMatrix, 0, mLightPosInWorldSpace, 0);
+
+        //cube 2
+        Matrix.setIdentityM(sqScratch, 0);
+        Matrix.translateM(sqScratch,  0, 0.0f, 0.0f, 0.0f);
         Matrix.multiplyMM(mMVPMatrix, 0, sqScratch, 0, mViewMatrix, 0);
         Matrix.multiplyMM(mMVPMatrix, 0, mProjectionMatrix, 0, mMVPMatrix, 0);
 
+        mCube2.draw4(mMVPMatrix, 50.0f);
 
-        //Matrix.setRotateM(mRotationMatrix, 0, sqAngle, 1.0f, 0, 1.0f);
-        Matrix.setRotateM(mRotationMatrix, 0, sqAngle, 0.25f, 0, 1.0f);
+
+        //cube 3
+        Matrix.setIdentityM(sqScratch, 0);
+        Matrix.setIdentityM(mMVPMatrix, 0);
+        Matrix.translateM(sqScratch,  0, 0.0f, 0.0f, 0.0f);
+        Matrix.multiplyMM(mMVPMatrix, 0, sqScratch, 0, mViewMatrix, 0);
+        Matrix.multiplyMM(mMVPMatrix, 0, mProjectionMatrix, 0, mMVPMatrix, 0);
+
+        Matrix.setRotateM(mRotationMatrix, 0, sqAngle, 0.5f, 0.3f, 1.0f);
         //Matrix.multiplyMM(mMVPMatrix, 0, mMVPMatrix, 0, mRotationMatrix, 0);
         Matrix.multiplyMM(sqScratch, 0, mMVPMatrix, 0, mRotationMatrix, 0);
-
-        //mCube.drawThatWorks(sqScratch);
-        mCube.draw3(sqScratch);
-
-        // Combine the rotation matrix with the projection and camera view
-        // Note that the mMVPMatrix factor *must be first* in order
-        // for the matrix multiplication product to be correct.
-        Matrix.setRotateM(mRotationMatrix, 0, mAngle, 1.0f, 1.0f, 5.0f);
-        Matrix.multiplyMM(scratch, 0, mMVPMatrix, 0, mRotationMatrix, 0);
-
-        // Draw triangle
-        //mTriangle.draw(scratch);
+        mCube3.draw3(sqScratch, 0.5f);
     }
 
+    private static boolean moveObject(float coordinates[], float x, float y, float z, float speed) {
+        float epsilon = 0.5f;
+        double [] angles = new double [2];
+        angles = returnAngles(coordinates[0], coordinates[1], coordinates[2], x, y, z);
+
+        coordinates[0] += speed*Math.cos(angles[0]);
+        coordinates[1] += speed*Math.sin(angles[0]);
+        coordinates[2] += speed*Math.sin(angles[1]);
+
+        if(approxEqual(coordinates[0], x, epsilon) && approxEqual(coordinates[1], y, epsilon)
+                && approxEqual(coordinates[2], z, epsilon)) return true;
+
+        return false;
+    }
+
+    private static double[] returnAngles(float x1, float y1, float z1, float x2, float y2, float z2)
+    {
+        float deltax = Math.abs((x2-x1));
+        float deltay = Math.abs((y2-y1));
+        float deltaz = Math.abs((z2-z1));
+
+        if (deltax == 0.0) deltax = 0.0001f;
+
+        float xySlope = deltay/deltax;
+        float xzSlope = deltaz/deltax;
+
+        double [] angles = new double [2];
+        angles[0] = Math.atan((double)xySlope);
+        angles[1] = Math.atan((double)xzSlope);
+
+        if(x2 >= x1 && y2 >= y1);
+        else if(x2 >= x1 && y2 < y1) angles[0] *= -1;
+        else if(x2 <= x1 && y2 < y1) angles[0] = Math.PI + angles[0];
+        else if(x2 < x1 && y2 >= y1) angles[0] = Math.PI - angles[0];
+
+        if(x2 >= x1 && z2 >= z1);
+        else if(x2 >= x1 && z2 < z1) angles[1] *= -1;
+        else if(x2 <= x1 && z2 < z1) angles[1] = Math.PI + angles[1];
+        else if(x2 < x1 && z2 >= z1) angles[1] = Math.PI - angles[1];
+        return angles;
+    }
+
+    public static boolean approxEqual(float x, float y, float eps){
+        return Math.abs(x-y)<eps;
+    }
     @Override
     public void onSurfaceChanged(GL10 unused, int width, int height) {
         // Adjust the viewport based on geometry changes,
         // such as screen rotation
         GLES20.glViewport(0, 0, width, height);
 
-        float ratio = (float) width / height;
+        final float ratio = (float) width / height;
+        final float left = -ratio;
+        final float right = ratio;
+        final float bottom = -1.0f;
+        final float top = 1.0f;
+        final float near = 1.0f;
+        final float far = 10.0f;
 
-        // this projection matrix is applied to object coordinates
-        // in the onDrawFrame() method
-        Matrix.frustumM(mProjectionMatrix, 0, -ratio, ratio, -1, 1, 3, 7);
-
+        // Matrix.frustumM(mProjectionMatrix, 0, left, right, bottom, top, near, far);
+        Matrix.frustumM(mProjectionMatrix, 0, left, right, -1, 1, 1, 100);
     }
 
     /**
@@ -221,20 +296,49 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
         }
     }
 
-    /**
-     * Returns the rotation angle of the triangle shape (mTriangle).
-     *
-     * @return - A float representing the rotation angle.
-     */
-    public float getAngle() {
-        return mAngle;
-    }
+    public static int createAndLinkProgram(final int vertexShaderHandle, final int fragmentShaderHandle, final String[] attributes)
+    {
+        int programHandle = GLES20.glCreateProgram();
 
-    /**
-     * Sets the rotation angle of the triangle shape (mTriangle).
-     */
-    public void setAngle(float angle) {
-        mAngle = angle;
-    }
+        if (programHandle != 0)
+        {
+            // Bind the vertex shader to the program.
+            GLES20.glAttachShader(programHandle, vertexShaderHandle);
 
+            // Bind the fragment shader to the program.
+            GLES20.glAttachShader(programHandle, fragmentShaderHandle);
+
+            // Bind attributes
+            if (attributes != null)
+            {
+                final int size = attributes.length;
+                for (int i = 0; i < size; i++)
+                {
+                    GLES20.glBindAttribLocation(programHandle, i, attributes[i]);
+                }
+            }
+
+            // Link the two shaders together into a program.
+            GLES20.glLinkProgram(programHandle);
+
+            // Get the link status.
+            final int[] linkStatus = new int[1];
+            GLES20.glGetProgramiv(programHandle, GLES20.GL_LINK_STATUS, linkStatus, 0);
+
+            // If the link failed, delete the program.
+            if (linkStatus[0] == 0)
+            {
+                Log.e(TAG, "Error compiling program: " + GLES20.glGetProgramInfoLog(programHandle));
+                GLES20.glDeleteProgram(programHandle);
+                programHandle = 0;
+            }
+        }
+
+        if (programHandle == 0)
+        {
+            throw new RuntimeException("Error creating program.");
+        }
+
+        return programHandle;
+    }
 }
