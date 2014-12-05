@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- From: file:/users/ugrad/murrac14/AndroidStudioProjects/awesome-deadly-project-master/app/src/main/res/values/strings.xml -->
+    <eat-comment />
+
+    <string name="app_name">RAVING SHAPES</string>
+    <string name="hello">Hello, OpenGL ES 2.0!</string>
+
+</resources>
