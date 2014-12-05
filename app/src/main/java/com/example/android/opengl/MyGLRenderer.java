@@ -39,9 +39,46 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
     private float [] [] theJourney = new float [pointsOnJourney][3];
     private short coord = 0;
 
-    double alpha = 0.0f;
-    double beta;
 
+    public void setXzCurrAngle(float xzCurrAngle) {
+        this.xzCurrAngle = xzCurrAngle;
+    }
+    public void setXyCurrAngle(float xyCurrAngle) {
+        this.xyCurrAngle = xyCurrAngle;
+    }
+
+    float xzCurrAngle = 0.0f;
+    float xyCurrAngle = 0.0f;
+
+    // double xzDestAngle = 0.0f;
+    // double xyDestAngle = 0.0f;
+    boolean firstTime = true;
+
+    boolean reachedAngle = false;
+
+    enum CameraState { CORNER, CENTRE, FIRSTPERSON, THIRDPERSON};
+    private CameraState cameraState;
+
+    boolean arrayOfStates[] = new boolean[4];
+    volatile int state = 0;
+
+    final int amountOfStates = 6;
+    //state 0 = top corner looking centre
+    //state 1 = bottom corner tracking
+    // state 2 = centre tracking
+    //state 3 = follow and track 3rd person
+    //state 4 = follow and track 3rd person far away
+    //state 5 == firstperson
+
+    public void changeCameraState() {
+        state++;
+        cubeReached = false;
+        if (state >= amountOfStates && !touched) state = 0;
+    }
+
+    public volatile boolean touched = false;
+
+    boolean cubeReached = false;
 
     float theta = 0.0f;
     float speed = 0.01f;
@@ -77,13 +114,13 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
     @Override
     public void onSurfaceCreated(GL10 unused, EGLConfig config) {
         //GLES20.glEnable(GLES20.GL_BLEND);
-       // GLES20.glBlendFunc(GLES20.GL_ONE, GLES20.GL_ONE_MINUS_SRC_ALPHA);B
+        // GLES20.glBlendFunc(GLES20.GL_ONE, GLES20.GL_ONE_MINUS_SRC_ALPHA);B
         //GLES20.glEnable(GLES20.GL_NORMALIZE);
         GLES20.glEnable(GLES20.GL_DEPTH_TEST);
         //unused.glEnable(GL_RESCALE_NORMAL);
         GLES20.glEnable(GLES20.GL_VERTEX_ATTRIB_ARRAY_NORMALIZED);
-       // GLES20.glLightModeli(GL_LIGHT_MODEL_TWO_SIDE, GL_TRUE);
-       // unused.glLightModeli(GL_LIGHT_MODEL_TWO_SIDE, GL_TRUE);
+        // GLES20.glLightModeli(GL_LIGHT_MODEL_TWO_SIDE, GL_TRUE);
+        // unused.glLightModeli(GL_LIGHT_MODEL_TWO_SIDE, GL_TRUE);
 
         // Set the background frame color
         GLES20.glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
@@ -127,6 +164,8 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
         if(radius > 6.0f) radius = radius - speed;
         else radius = radius + speed;
 
+        touched = false;
+
         boolean reachedDestination2 = false;
        /* reachedDestination2 = (moveObject(eyeXYZ, theJourney[coord][0] + 2.0f, theJourney[coord][1] + 2.0f, theJourney[coord][2], 0.1f));
         if(reachedDestination2){
@@ -137,14 +176,97 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
         //eyeX = (float)(3.0 * Math.cos(theta)); //+ circle.cx;
         //eyeZ = (float)(radius * Math.sin(theta)); //+ circle.cy;
         // eyeY = (float)(radius * Math.cos(theta));
-        eyeZ = 30.0f;
-        eyeX = 30.0f;
-        eyeY = 25.0f;
-        // Set the camera position (View matrix)
-        // Matrix.setLookAtM(mViewMatrix, 0, eyeX, eyeY, eyeZ, 0f, 0f, 0f, 0f, 1.0f, 0.0f);
-        Matrix.setLookAtM(mViewMatrix, 0, eyeX, eyeY, eyeZ, centerOfCubeWorldSpace[0], centerOfCubeWorldSpace[1], centerOfCubeWorldSpace[2], 0f, 1.0f, 0.0f);
-       // Matrix.setIdentityM(mViewMatrix, 0);
-      //  Matrix.setLookAtM(mViewMatrix, 0, eyeXYZ[0], eyeXYZ[1], eyeXYZ[2], 0.0f, 0.0f, 0.0f, 0f, 1.0f, 0.0f);
+
+        reachedDestination = moveObject(centerOfCubeWorldSpace, theJourney[coord][0], theJourney[coord][1], theJourney[coord][2], 0.1f);
+        if(reachedDestination){
+            reachedDestination = false;
+            reachedAngle = false;
+            firstTime = true;
+            coord++;
+            if(coord > pointsOnJourney - 1) coord = 0;
+        }
+
+        //state 0 = top corner looking centre
+        //state 1 = bottom corner tracking
+        // state 2 = centre tracking
+        //state 3 = follow and track 3rd person
+        //state 4 = follow and track 3rd person far away
+        //state 5 == firstperson
+        if (state == 0) {
+            eyeZ = 35.0f;
+            eyeX = 35.0f;
+            eyeY = 35.0f;
+            Matrix.setLookAtM(mViewMatrix, 0, eyeX, eyeY, eyeZ, 0f, 0f, 0.0f, 0f, 1.0f, 0.0f);
+        }
+        else if (state == 1) {
+            eyeZ = -35.0f;
+            eyeX = -35.0f;
+            eyeY = -35.0f;
+            Matrix.setLookAtM(mViewMatrix, 0, eyeX, eyeY, eyeZ, centerOfCubeWorldSpace[0], centerOfCubeWorldSpace[1], centerOfCubeWorldSpace[2], 0f, 1.0f, 0.0f);
+        }
+        else if (state == 2) {
+            eyeZ = 0.0f;
+            eyeX = 0.0f;
+            eyeY = 0.0f;
+            Matrix.setLookAtM(mViewMatrix, 0, eyeX, eyeY, eyeZ, centerOfCubeWorldSpace[0], centerOfCubeWorldSpace[1], centerOfCubeWorldSpace[2], 0f, 1.0f, 0.0f);
+        }
+        else if (state == 3) {
+            float offset = 2.0f;
+            float offset2 = 2.5f;
+
+            float distanceFromObect = distance(0, 0, 0, offset, offset, offset);
+            if (distance(centerOfCubeWorldSpace[0], centerOfCubeWorldSpace[1], centerOfCubeWorldSpace[2], eyeXYZ[0], eyeXYZ[1], eyeXYZ[2]) > distanceFromObect && !cubeReached) {
+                moveObject(eyeXYZ, centerOfCubeWorldSpace[0] + offset, centerOfCubeWorldSpace[1] + offset, centerOfCubeWorldSpace[2] + offset, 0.25f);
+                Matrix.setLookAtM(mViewMatrix, 0, eyeXYZ[0], eyeXYZ[1], eyeXYZ[2], centerOfCubeWorldSpace[0], centerOfCubeWorldSpace[1], centerOfCubeWorldSpace[2], 0f, 1.0f, 0.0f);
+            }
+            if (distance(centerOfCubeWorldSpace[0], centerOfCubeWorldSpace[1], centerOfCubeWorldSpace[2], eyeXYZ[0], eyeXYZ[1], eyeXYZ[2]) < distanceFromObect && !cubeReached) {
+                cubeReached = true;
+            }
+            if (cubeReached) {
+                eyeXYZ[0] = centerOfCubeWorldSpace[0] + offset2;
+                eyeXYZ[1] = centerOfCubeWorldSpace[1] + offset2;
+                eyeXYZ[2] = centerOfCubeWorldSpace[2] + offset2;
+                Matrix.setLookAtM(mViewMatrix, 0, eyeXYZ[0], eyeXYZ[1], eyeXYZ[2], centerOfCubeWorldSpace[0], centerOfCubeWorldSpace[1], centerOfCubeWorldSpace[2], 0f, 1.0f, 0.0f);
+            }
+        }
+        else if (state == 4) {
+            float offset = 4.0f;
+            float offset2 = 6.0f;
+            float distanceFromObect = distance(0, 0, 0, offset, offset, offset);
+            if (distance(centerOfCubeWorldSpace[0], centerOfCubeWorldSpace[1], centerOfCubeWorldSpace[2], eyeXYZ[0], eyeXYZ[1], eyeXYZ[2]) > distanceFromObect && !cubeReached) {
+                moveObject(eyeXYZ, centerOfCubeWorldSpace[0] + offset, centerOfCubeWorldSpace[1] + offset, centerOfCubeWorldSpace[2] + offset, 0.25f);
+                Matrix.setLookAtM(mViewMatrix, 0, eyeXYZ[0], eyeXYZ[1], eyeXYZ[2], centerOfCubeWorldSpace[0], centerOfCubeWorldSpace[1], centerOfCubeWorldSpace[2], 0f, 1.0f, 0.0f);
+            }
+            if (distance(centerOfCubeWorldSpace[0], centerOfCubeWorldSpace[1], centerOfCubeWorldSpace[2], eyeXYZ[0], eyeXYZ[1], eyeXYZ[2]) < distanceFromObect && !cubeReached) {
+                cubeReached = true;
+            }
+            if (cubeReached) {
+                eyeXYZ[0] = centerOfCubeWorldSpace[0] + offset2;
+                eyeXYZ[1] = centerOfCubeWorldSpace[1] + offset2;
+                eyeXYZ[2] = centerOfCubeWorldSpace[2] + offset2;
+                Matrix.setLookAtM(mViewMatrix, 0, eyeXYZ[0], eyeXYZ[1], eyeXYZ[2], centerOfCubeWorldSpace[0], centerOfCubeWorldSpace[1], centerOfCubeWorldSpace[2], 0f, 1.0f, 0.0f);
+            }
+        }
+        else if (state == 5) {
+            float offset = 2.0f;
+            float offset2 = 2.5f;
+            float distanceFromObect = distance(0, 0, 0, offset, offset, offset);
+            if (distance(centerOfCubeWorldSpace[0], centerOfCubeWorldSpace[1], centerOfCubeWorldSpace[2], eyeXYZ[0], eyeXYZ[1], eyeXYZ[2]) > distanceFromObect && !cubeReached) {
+                moveObject(eyeXYZ, centerOfCubeWorldSpace[0] + offset, centerOfCubeWorldSpace[1] + offset, centerOfCubeWorldSpace[2] + offset, 0.25f);
+                Matrix.setLookAtM(mViewMatrix, 0, eyeXYZ[0], eyeXYZ[1], eyeXYZ[2], centerOfCubeWorldSpace[0], centerOfCubeWorldSpace[1], centerOfCubeWorldSpace[2], 0f, 1.0f, 0.0f);
+            }
+            if (distance(centerOfCubeWorldSpace[0], centerOfCubeWorldSpace[1], centerOfCubeWorldSpace[2], eyeXYZ[0], eyeXYZ[1], eyeXYZ[2]) < distanceFromObect && !cubeReached) {
+                cubeReached = true;
+            }
+            if (cubeReached) {
+                eyeXYZ[0] = centerOfCubeWorldSpace[0];
+                eyeXYZ[1] = centerOfCubeWorldSpace[1];
+                eyeXYZ[2] = centerOfCubeWorldSpace[2] + 3.0f;
+                Matrix.setLookAtM(mViewMatrix, 0, eyeXYZ[0], eyeXYZ[1], eyeXYZ[2], centerOfCubeWorldSpace[0], centerOfCubeWorldSpace[1], centerOfCubeWorldSpace[2], 0f, 1.0f, 0.0f);
+            }
+        }
+        // Matrix.setIdentityM(mViewMatrix, 0);
+        //  Matrix.setLookAtM(mViewMatrix, 0, eyeXYZ[0], eyeXYZ[1], eyeXYZ[2], 0.0f, 0.0f, 0.0f, 0f, 1.0f, 0.0f);
         //Matrix.setLookAtM(mViewMatrix, 0, eyeXYZ[0], eyeXYZ[1], eyeXYZ[2],  centerOfCubeWorldSpace[0], centerOfCubeWorldSpace[1], centerOfCubeWorldSpace[2], 0f, 1.0f, 0.0f);
         //eyeXYZ[0] += speed;
         // Use the following code to generate constant rotation.
@@ -171,41 +293,39 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
 
 
 
-        boolean reachedAngle = false;
+
         Matrix.setIdentityM(sqScratch, 0);
         Matrix.setIdentityM(mMVPMatrix, 0);
-        //Matrix.translateM(sqScratch, 0, 0.0f, 0.0f, 0.0f);
-        /*reachedAngle = rotateObject(centerOfCubeWorldSpace, sqScratch, theJourney[coord][0], theJourney[coord][1], theJourney[coord][2], 0.1f, alpha, beta);
-        if (reachedAngle) {
-            reachedAngle = false;
-            alpha = 0.0f;
+
+
+
+        Matrix.translateM(sqScratch, 0, centerOfCubeWorldSpace[0], centerOfCubeWorldSpace[1], centerOfCubeWorldSpace[2]);
+
+     /*   if (firstTime) {
+            double[] angles = new double[2];
+            angles = returnAngles( centerOfCubeWorldSpace[0], centerOfCubeWorldSpace[1], centerOfCubeWorldSpace[2], theJourney[coord][0], theJourney[coord][1], theJourney[coord][2]);
+            xzDestAngle = angles[1];
+
+            firstTime = false;
         }*/
-        final float[] rotationMatrix= new float[16];
-        Matrix.setIdentityM(rotationMatrix, 0);
-        Matrix.setRotateM(rotationMatrix, 0, sqAngle, 0.0f, 1.0f, 0.0f);
-        Matrix.multiplyMM(sqScratch, 0, sqScratch, 0, rotationMatrix, 0);
 
-        //Matrix.translateM(sqScratch, 0, centerOfCubeWorldSpace[0], centerOfCubeWorldSpace[1], centerOfCubeWorldSpace[2]);
+        if (!reachedAngle) {
+            //rotateObject(centerOfCubeWorldSpace, sqScratch, theJourney[coord][0], theJourney[coord][1], theJourney[coord][2], 0.3f, xzCurrAngle, xyCurrAngle);
+        }
+        else {
+            int i = 5;
+        }
 
-        
-        //FOR GOD SAKE MAKE A FUNCTION GIVE COORDINATES, ROTATION, SCALE,
+        // rotateObject(centerOfCubeWorldSpace, sqScratch, -25.0f, 25.0f, -45.0f, 0.4f, xzCurrAngle, xyCurrAngle);
 
+
+
+        //Matrix.setRotateM(rotationMatrix, 0, sqAngle, 0.0f, 1.0f, 0.0f);
+        // Matrix.multiplyMM(sqScratch, 0,rotationMatrix , 0,sqScratch , 0);
+        Matrix.rotateM(sqScratch, 0 , xzCurrAngle, 0.0f, 1.0f, 0.0f);
 
         Matrix.multiplyMV(centerOfCubeWorldSpace , 0, sqScratch, 0, centerOfCubeModelSpace , 0);
         Matrix.multiplyMV(centerOfCubeEyeSpace , 0, mViewMatrix, 0, centerOfCubeWorldSpace , 0);
-        reachedDestination = moveObject(centerOfCubeWorldSpace, theJourney[coord][0], theJourney[coord][1], theJourney[coord][2], 0.1f);
-        if(reachedDestination){
-            reachedDestination = false;
-            coord++;
-            if(coord > pointsOnJourney - 1) coord = 0;
-        }
-
-      // if( moveObject(centerOfCubeWorldSpace, theJourney[coord][0], theJourney[coord][1], theJourney[coord][2], 0.1f);)
-        //if( moveObject(eyeXYZ, 10.0f, 10.0f, 10.0f, 0.2f))
-        //Matrix.multiplyMM(mMVPMatrix, 0, mViewMatrix, 0, sqScratch, 0);
-       // Matrix.multiplyMM(mMVPMatrix, 0, mProjectionMatrix, 0, mMVPMatrix, 0);
-
-
 
         mCube.draw5(sqScratch, 1.0f);
         //mCube.draw3(sqScratch, 1.0f);
@@ -213,16 +333,16 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
         // Matrix.multiplyMV(mLightPosInEyeSpace, 0, mViewMatrix, 0, mLightPosInWorldSpace, 0);
 
         //cube 2
-        float[] scale_matrix = new float[16];
+        // float[] scale_matrix = new float[16];
         Matrix.setIdentityM(sqScratch, 0);
         /*Matrix.setIdentityM(scale_matrix, 0);
         float[] scale = {50.0f,50.0f,50.0f};
         Matrix.scaleM(scale_matrix, 0, scale[0], scale[1], scale[2]);
 
         Matrix.multiplyMM(sqScratch, 0, sqScratch , 0, scale_matrix, 0);*/
-       // Matrix.translateM(sqScratch,  0, 0.0f, 0.0f, 0.0f);
-       // Matrix.multiplyMM(mMVPMatrix, 0, sqScratch, 0, mViewMatrix, 0);
-      //  Matrix.multiplyMM(mMVPMatrix, 0, mProjectionMatrix, 0, mMVPMatrix, 0);
+        // Matrix.translateM(sqScratch,  0, 0.0f, 0.0f, 0.0f);
+        // Matrix.multiplyMM(mMVPMatrix, 0, sqScratch, 0, mViewMatrix, 0);
+        //  Matrix.multiplyMM(mMVPMatrix, 0, mProjectionMatrix, 0, mMVPMatrix, 0);
 
         mCube2.draw5(sqScratch, 50.0f);
 
@@ -238,9 +358,9 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
         Matrix.multiplyMM(sqScratch, 0, mMVPMatrix, 0, mRotationMatrix, 0);
         mCube3.draw3(sqScratch, 0.5f);*/
 
-        Matrix.setIdentityM(sqScratch, 0);
-        Matrix.setIdentityM(mMVPMatrix, 0);
-        centreCube.draw5(sqScratch, 20.0f);
+        //Matrix.setIdentityM(sqScratch, 0);
+        // Matrix.setIdentityM(mMVPMatrix, 0);
+        //centreCube.draw5(sqScratch, 20.0f);
     }
 
     private static boolean moveObject(float coordinates[], float x, float y, float z, float speed) {
@@ -258,29 +378,86 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
         return false;
     }
 
-    private static boolean rotateObject(float coordinates[],float[] modelMatrix, float destX, float destY, float destZ, float angularSpeed, double alpha, double beta) {
-        double epsilon = 0.3f;
-        double [] angles = new double [2];
+    private boolean rotateObject(float coordinates[],float[] modelMatrix, float destX, float destY, float destZ, float angularSpeed, float xzCurrAngle, float xyCurrAngle) {
+        float epsilon = angularSpeed;
+        //double xzDestAngle;
+        //double xyDestAngle;
+
+        double[] angles = new double[2];
         angles = returnAngles(coordinates[0], coordinates[1], coordinates[2], destX, destY, destZ);
-
-        alpha += angularSpeed;
-        beta = angles[1];
-
-        final float[] rotationMatrix= new float[16];
-        Matrix.setIdentityM(rotationMatrix, 0);
-        Matrix.setRotateM(rotationMatrix, 0, (float)alpha, 0.0f, 1.0f, 0.0f);
-        Matrix.multiplyMM(modelMatrix, 0, rotationMatrix, 0, modelMatrix, 0);
+        double xzDestAngle = angles[1];
 
 
-        if (approxEqual(alpha, Math.PI - beta, epsilon)) return true;
+        //Making a global angle gamma that which will be the amount it has to turn each time (will be the incremented value
+        //angles are the angles between object and destination
+        //angles2 are the angles between object and x axis, say 50.0
 
-        //if (true) angularSpeed -= 1;
-        /*coordinates[0] += speed*Math.cos(angles[0]);
-        coordinates[1] += speed*Math.sin(angles[0]);
-        coordinates[2] += speed*Math.sin(angles[1]);
+        // double[] angles2 = new double[2];
 
-        if(approxEqual(coordinates[0], x, epsilon) && approxEqual(coordinates[1], y, epsilon)
-                && approxEqual(coordinates[2], z, epsilon)) return true;*/
+        //xyz 1 = end of x-axis: xyz 2 = object
+        //angles2 = returnAngles(50.0f, 0.0f, 0.0f, coordinates[0], coordinates[1], coordinates[2]);
+
+        //xzDestAngle = angles2[1] - angles[1];
+        // xyDestAngle = angles2[1] - angles[1];
+
+
+        //Now turn the amount between these angles (positive rotation assumed clockwise, otherwise change to angles - angles2
+        //alpha is now angle to reach, delat is amount to rotate image, if they're equal return true :)
+        //Assuming rotation is clockwise
+
+        //Check quadrants
+        //Alpha say xy angle
+        //Change cur an
+        if (approxEqual(xzCurrAngle,xzDestAngle, epsilon)) {
+            return true;
+        }
+        else {
+            //if (xzCurrAngle >= Math.) {
+            //    xzCurrAngle = 0.0f;
+            // }
+            //if(Math.abs(xzCurrAngle - xzDestAngle) < 3.14) {
+            //    angularSpeed *= -1;
+            // }
+            xzCurrAngle += angularSpeed;
+            xzCurrAngle = xzCurrAngle % 6.28f;
+            setXzCurrAngle(xzCurrAngle);
+        }
+
+        /*if ((beta >= 0 && beta <= Math.PI/2) || (Math.PI/2 >= 0 && beta <= Math.PI)) {
+            if(destX > coordinates[0]) {
+                alpha += angularSpeed;
+                beta = angles[1];
+            }
+            else {
+                alpha -= angularSpeed;
+                beta = angles[1];
+            }
+        }
+        else{
+            if(destX > coordinates[0]) {
+                alpha += angularSpeed;
+                beta = angles[1];
+            }
+            else {
+                alpha -= angularSpeed;
+                beta = angles[1];
+            }
+        }*/
+
+        /*else if(Math.PI/2 >= 0 && beta <= Math.PI){
+            if(destX > coordinates[0]) {
+                alpha += angularSpeed;
+                beta = angles[1];
+            }
+            else {
+                alpha -= angularSpeed;
+                beta = angles[1];
+            }
+        }*/
+
+        //float[] sqScratch = new float[16];
+        //Matrix.RotateM(modelMatrix, 0 , xzCurrAngle, 0.0f, 1.0f, 0.0f);
+        //Matrix.RotateM(modelMatrix, 0 , 0.0f, 0.0f, 1.0f, 0.0f);
 
         return false;
     }
@@ -312,6 +489,13 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
         return angles;
     }
 
+    public static float distance(float x1, float y1, float z1, float x2, float y2, float z2) {
+        return (float)Math.sqrt(
+                (x2 - x1)*(x2 - x1)
+                        + (y2 - y1)*(y2 - y1)
+                        + (z2 - z1)*(z2 - z1) );
+    }
+
     public static boolean approxEqual(float x, float y, float eps){
         return Math.abs(x-y)<eps;
     }
@@ -334,8 +518,8 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
         final float near = 1.0f;
         final float far = 160.0f;
 
-         Matrix.frustumM(mProjectionMatrix, 0, left, right, bottom, top, near, far);
-       // Matrix.frustumM(mProjectionMatrix, 0, left, right, -1, 1, 1, 100);
+        Matrix.frustumM(mProjectionMatrix, 0, left, right, bottom, top, near, far);
+        // Matrix.frustumM(mProjectionMatrix, 0, left, right, -1, 1, 1, 100);
     }
 
     /**

@@ -47,19 +47,25 @@ public class MyGLSurfaceView extends GLSurfaceView {
     private float mPreviousX;
     private float mPreviousY;
 
-   /* @Override
+    @Override
     public boolean onTouchEvent(MotionEvent e) {
         // MotionEvent reports input details from the touch screen
         // and other input controls. In this case, you are only
         // interested in events where the touch position changed.
 
-        float x = e.getX();
-        float y = e.getY();
+        //  float x = e.getX();
+        //    float y = e.getY();
+
+
+
 
         switch (e.getAction()) {
-            case MotionEvent.ACTION_MOVE:
+            case MotionEvent.ACTION_DOWN:
+                mRenderer.changeCameraState();
+                mRenderer.touched = true;
+                break;
 
-                float dx = x - mPreviousX;
+/*                float dx = x - mPreviousX;
                 float dy = y - mPreviousY;
 
                //reverse direction of rotation above the mid-line
@@ -87,15 +93,16 @@ public class MyGLSurfaceView extends GLSurfaceView {
                         mRenderer.getAngle() +
                         ((dx + dy) * TOUCH_SCALE_FACTOR));  // = 180.0f / 320
                 requestRender();
-                setRenderMode(GLSurfaceView.RENDERMODE_CONTINUOUSLY);
+                setRenderMode(GLSurfaceView.RENDERMODE_CONTINUOUSLY);*/
 
+            default:
+                break;
         }
 
 
 
-        mPreviousX = x;
-        mPreviousY = y;
+        // mPreviousX = x;
+        // mPreviousY = y;
         return true;
     }
-    */
 }
