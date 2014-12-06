@@ -157,45 +157,74 @@ public class Shaders {
             // Pass through the color.
             + "   v_Color = a_Color;                                      \n"
             // Transform the normal's orientation into eye space.
-            + "   v_Normal = normalize(vec3(u_MVMatrix * vec4(a_Normal, 0.0)));      \n"
+            + "   v_Normal = (vec3(u_MVMatrix * vec4(a_Normal, 0.0)));      \n"
             // gl_Position is a special variable used to store the final position.
             // Multiply the vertex by the matrix to get the final point in normalized screen coordinates.
             + "   gl_Position = u_MVPMatrix * a_Position;                 \n"
             + "}                                                          \n";
 
     private final String perPixelFragmentShader =
-            "precision mediump float;       \n"		// Set the default precision to medium. We don't need as high of a
-            // precision in the fragment shader.
+            "precision mediump float;       \n"		// Set the default precision to medium. We don't need as high of a precision in the fragment shader.
             // The position of the light in eye space.
-            + "uniform vec3 u_LightPos;       \n"
+            + "uniform vec3 u_LightPos0;       \n"
+            + "uniform vec3 u_LightPos1;       \n"
+            + "uniform vec3 u_LightPos2;       \n"
+            + "uniform vec3 u_LightPos3;       \n"
+            + "uniform vec3 u_LightPos4;       \n"
+            + "uniform vec3 u_LightPos5;       \n"
+            + "uniform float distanceCorrection;"
+      //      + "uniform vec3 u_LightPos6;       \n"
             + "varying vec3 v_Position;		\n"		// Interpolated position for this fragment.
             + "varying vec4 v_Color;          \n"		// This is the color from the vertex shader interpolated across the triangle per fragment.
             + "varying vec3 v_Normal;         \n"		// Interpolated normal for this fragment.
-                    + "bool gl_FrontFacing;"
             // The entry point for our fragment shader.
             + "void main()                    \n"
             + "{                              \n"
-            // // Will be used for attenuation.
-             + "   float distance = length(u_LightPos - v_Position);                  \n"
+
+              //  + " float distanceCorrection = 1.0;"
+             + "   float distance0 = length(u_LightPos0 - v_Position) * distanceCorrection;   "
+            + "   float distance1 = length(u_LightPos1 - v_Position) * distanceCorrection;   "
+            + "   float distance2 = length(u_LightPos2 - v_Position) * distanceCorrection;   "
+            + "   float distance3 = length(u_LightPos3 - v_Position) * distanceCorrection;   "
+            + "   float distance4 = length(u_LightPos4 - v_Position) * distanceCorrection;   "
+            + "   float distance5 = length(u_LightPos5 - v_Position) * distanceCorrection;   "
             // Get a lighting direction vector from the light to the vertex.
-            + "   vec3 lightVector = normalize(u_LightPos - v_Position);             \n"
+            + "   vec3 lightVector0 = normalize(u_LightPos0 - v_Position);             \n"
+            + "   vec3 lightVector1 = normalize(u_LightPos1 - v_Position);             \n"
+            + "   vec3 lightVector2 = normalize(u_LightPos2 - v_Position);             \n"
+            + "   vec3 lightVector3 = normalize(u_LightPos3 - v_Position);             \n"
+            + "   vec3 lightVector4 = normalize(u_LightPos4 - v_Position);             \n"
+            + "   vec3 lightVector5 = normalize(u_LightPos5 - v_Position);             \n"
 
             //+ "if (dot(v_Normal, lightVector) < 0.0) { v_Normal = -v_Normal; }"
-                    + "if (dot(v_Normal, lightVector) < 0.0) {  float diffuse = -dot(v_Normal, lightVector); " +
-                    "                    gl_FragColor = v_Color * diffuse + 0.2; }"
-                   + " else {  float diffuse = dot(v_Normal, lightVector); " +
-                    "gl_FragColor = v_Color * diffuse + 0.2; } "
+                  //  + "if (dot(v_Normal, lightVector) < 0.0) {  float diffuse = -dot(v_Normal, lightVector); " +
+                //    "                    gl_FragColor = v_Color * diffuse + 0.2; }"
+               //    + " else {  float diffuse = dot(v_Normal, lightVector); " +
+               //     "gl_FragColor = v_Color * diffuse + 0.2; } "
 
 
-            // Add attenuation.
-                    //WORK OUT DISTANCE SOON
-            //+ "   diffuse = diffuse * (1.0 / (1.0 + (0.25 * distance * distance)));  \n"
+
+           + "float lowerClamp = 0.0f;"
+            + "   float diffuse0 = max(dot(v_Normal, lightVector0), lowerClamp);              \n"
+            + "   diffuse0 = diffuse0 * (1.0 / (1.0 + (0.25 * distance0 * distance0))); " +
+             "     float diffuse1 = max(dot(v_Normal, lightVector1), lowerClamp);              \n" +
+             "    diffuse1 = diffuse1 * (1.0 / (1.0 + (0.25 * distance1 * distance1)));"
+            + "   float diffuse2 = max(dot(v_Normal, lightVector2), lowerClamp);              \n"
+            + "   diffuse2 = diffuse2 * (1.0 / (1.0 + (0.25 * distance2 * distance2))); " +
+            "     float diffuse3 = max(dot(v_Normal, lightVector3), lowerClamp);              \n" +
+            "    diffuse3 = diffuse3 * (1.0 / (1.0 + (0.25 * distance3 * distance3)));"
+            + "   float diffuse4 = max(dot(v_Normal, lightVector4), lowerClamp);              \n"
+            + "   diffuse4 = diffuse4 * (1.0 / (1.0 + (0.25 * distance4 * distance4))); "
+            + "   float diffuse5 = max(dot(v_Normal, lightVector5), lowerClamp);              \n"
+            + "   diffuse5 = diffuse5 * (1.0 / (1.0 + (0.25 * distance5 * distance5))); "
+
+            +"   float totalDiffuse = diffuse0 + diffuse1 + diffuse2 + diffuse3 + diffuse4 + diffuse5 ;"
+
             // Multiply the color by the diffuse illumination level to get final output color.
                     // Calculate the dot product of the light vector and vertex normal. If the normal and light vector are
                     // pointing in the same direction then it will get max illumination.
-                  //  + "   float diffuse = max(dot(v_Normal, lightVector), 0.2);              \n"
-                  //  + "   float diffuse = dot(v_Normal, lightVector);              \n"
-           // + "   gl_FragColor = v_Color + 0.2;                                  \n"
+
+            + "   gl_FragColor = v_Color * totalDiffuse + 0.1;                                  \n"
             + "}                                                                     \n";
 
 

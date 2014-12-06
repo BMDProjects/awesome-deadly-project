@@ -30,7 +30,13 @@ public class Cube {
     private int mMVPMatrixHandle;
 
     private int mMVMatrixHandle;
-    private int mLightPosHandle;
+    private int mLightPosHandle0;
+    private int mLightPosHandle1;
+    private int mLightPosHandle2;
+    private int mLightPosHandle3;
+    private int mLightPosHandle4;
+    private int mLightPosHandle5;
+    private int distanceCorrectionHandle;
     private int mNormalHandle;
 
     public int delayer = 20;
@@ -199,56 +205,7 @@ public class Cube {
                     0.0f, -1.0f, 0.0f
             };
 
-    /*final float[] cubeNormalData =
-            {
-                    // Front face
-                    0.0f, 0.0f, -1.0f,
-                    0.0f, 0.0f, -1.0f,
-                    0.0f, 0.0f, -1.0f,
-                    0.0f, 0.0f, -1.0f,
-                    0.0f, 0.0f, -1.0f,
-                    0.0f, 0.0f, -1.0f,
 
-                    // Right face
-                    -1.0f, 0.0f, 0.0f,
-                    -1.0f, 0.0f, 0.0f,
-                    -1.0f, 0.0f, 0.0f,
-                    -1.0f, 0.0f, 0.0f,
-                    -1.0f, 0.0f, 0.0f,
-                    -1.0f, 0.0f, 0.0f,
-
-                    // Back face
-                    0.0f, 0.0f, 1.0f,
-                    0.0f, 0.0f, 1.0f,
-                    0.0f, 0.0f, 1.0f,
-                    0.0f, 0.0f, 1.0f,
-                    0.0f, 0.0f, 1.0f,
-                    0.0f, 0.0f, 1.0f,
-
-                    // Left face
-                    1.0f, 0.0f, 0.0f,
-                    1.0f, 0.0f, 0.0f,
-                    1.0f, 0.0f, 0.0f,
-                    1.0f, 0.0f, 0.0f,
-                    1.0f, 0.0f, 0.0f,
-                    1.0f, 0.0f, 0.0f,
-
-                    // Top face
-                    0.0f, -1.0f, 0.0f,
-                    0.0f, -1.0f, 0.0f,
-                    0.0f, -1.0f, 0.0f,
-                    0.0f, -1.0f, 0.0f,
-                    0.0f, -1.0f, 0.0f,
-                    0.0f, -1.0f, 0.0f,
-
-                    // Bottom face
-                    0.0f, 1.0f, 0.0f,
-                    0.0f, 1.0f, 0.0f,
-                    0.0f, 1.0f, 0.0f,
-                    0.0f, 1.0f, 0.0f,
-                    0.0f, 1.0f, 0.0f,
-                    0.0f, 1.0f, 0.0f
-            };*/
 
 
     private final int vertexStride = COORDS_PER_VERTEX * 4; // 4 bytes per vertex
@@ -486,7 +443,7 @@ public class Cube {
 
         mMVPMatrixHandle = GLES20.glGetUniformLocation(mProgram3, "u_MVPMatrix");
         mMVMatrixHandle = GLES20.glGetUniformLocation(mProgram3, "u_MVMatrix");
-        mLightPosHandle = GLES20.glGetUniformLocation(mProgram3, "u_LightPos");
+        //mLightPosHandle = GLES20.glGetUniformLocation(mProgram3, "u_LightPos");
         mPositionHandle = GLES20.glGetAttribLocation(mProgram3, "a_Position");
         mColorHandle = GLES20.glGetAttribLocation(mProgram3, "a_Color");
         mNormalHandle = GLES20.glGetAttribLocation(mProgram3, "a_Normal");
@@ -536,7 +493,7 @@ public class Cube {
         // Pass in the combined matrix.
         GLES20.glUniformMatrix4fv(mMVPMatrixHandle, 1, false, mMVPMatrix, 0);
 
-        GLES20.glUniform3f(mLightPosHandle, MyGLRenderer.light1.mLightPosInEyeSpace[0], MyGLRenderer.light1.mLightPosInEyeSpace[1], MyGLRenderer.light1.mLightPosInEyeSpace[2]);
+      //  GLES20.glUniform3f(mLightPosHandle, MyGLRenderer.light1.mLightPosInEyeSpace[0], MyGLRenderer.light1.mLightPosInEyeSpace[1], MyGLRenderer.light1.mLightPosInEyeSpace[2]);
 
         // Draw the cube.
         GLES20.glDrawArrays(GLES20.GL_TRIANGLES, 0, 36);
@@ -551,7 +508,15 @@ public class Cube {
 
         mMVPMatrixHandle = GLES20.glGetUniformLocation(mProgramPerPixel, "u_MVPMatrix");
         mMVMatrixHandle = GLES20.glGetUniformLocation(mProgramPerPixel, "u_MVMatrix");
-        mLightPosHandle = GLES20.glGetUniformLocation(mProgramPerPixel, "u_LightPos");
+
+        mLightPosHandle0 = GLES20.glGetUniformLocation(mProgramPerPixel, "u_LightPos0");
+        mLightPosHandle1 = GLES20.glGetUniformLocation(mProgramPerPixel, "u_LightPos1");
+        mLightPosHandle2 = GLES20.glGetUniformLocation(mProgramPerPixel, "u_LightPos2");
+        mLightPosHandle3 = GLES20.glGetUniformLocation(mProgramPerPixel, "u_LightPos3");
+        mLightPosHandle4 = GLES20.glGetUniformLocation(mProgramPerPixel, "u_LightPos4");
+        mLightPosHandle5 = GLES20.glGetUniformLocation(mProgramPerPixel, "u_LightPos5");
+
+        distanceCorrectionHandle = GLES20.glGetUniformLocation(mProgramPerPixel, "distanceCorrection");
         mPositionHandle = GLES20.glGetAttribLocation(mProgramPerPixel, "a_Position");
         mColorHandle = GLES20.glGetAttribLocation(mProgramPerPixel, "a_Color");
         mNormalHandle = GLES20.glGetAttribLocation(mProgramPerPixel, "a_Normal");
@@ -573,11 +538,11 @@ public class Cube {
                 0, mCubeNormals);
         GLES20.glEnableVertexAttribArray(mNormalHandle);
 
-        /*float[] scale_matrix = new float[16];
+        float[] scale_matrix = new float[16];
         float[] scale = {cubeScale,cubeScale,cubeScale};
         Matrix.setIdentityM(scale_matrix, 0);
         Matrix.scaleM(scale_matrix, 0, scale[0], scale[1], scale[2]);
-        Matrix.multiplyMM(modelMatrix, 0, modelMatrix , 0, scale_matrix, 0);*/
+        Matrix.multiplyMM(modelMatrix, 0, modelMatrix , 0, scale_matrix, 0);
 
        /* float[] scale_matrix = new float[16];
         float[] scale = {cubeScale,cubeScale,cubeScale};
@@ -603,7 +568,14 @@ public class Cube {
         // Pass in the combined matrix.
         GLES20.glUniformMatrix4fv(mMVPMatrixHandle, 1, false, mMVPMatrix, 0);
 
-        GLES20.glUniform3f(mLightPosHandle, MyGLRenderer.light1.mLightPosInEyeSpace[0], MyGLRenderer.light1.mLightPosInEyeSpace[1], MyGLRenderer.light1.mLightPosInEyeSpace[2]);
+        GLES20.glUniform1f(distanceCorrectionHandle, 0.1f);
+
+        GLES20.glUniform3f(mLightPosHandle0, MyGLRenderer.light[0].mLightPosInEyeSpace[0], MyGLRenderer.light[0].mLightPosInEyeSpace[1], MyGLRenderer.light[0].mLightPosInEyeSpace[2]);
+        GLES20.glUniform3f(mLightPosHandle1, MyGLRenderer.light[1].mLightPosInEyeSpace[0], MyGLRenderer.light[1].mLightPosInEyeSpace[1], MyGLRenderer.light[1].mLightPosInEyeSpace[2]);
+        GLES20.glUniform3f(mLightPosHandle2, MyGLRenderer.light[2].mLightPosInEyeSpace[0], MyGLRenderer.light[2].mLightPosInEyeSpace[1], MyGLRenderer.light[2].mLightPosInEyeSpace[2]);
+        GLES20.glUniform3f(mLightPosHandle3, MyGLRenderer.light[3].mLightPosInEyeSpace[0], MyGLRenderer.light[3].mLightPosInEyeSpace[1], MyGLRenderer.light[3].mLightPosInEyeSpace[2]);
+        GLES20.glUniform3f(mLightPosHandle4, MyGLRenderer.light[4].mLightPosInEyeSpace[0], MyGLRenderer.light[4].mLightPosInEyeSpace[1], MyGLRenderer.light[4].mLightPosInEyeSpace[2]);
+        GLES20.glUniform3f(mLightPosHandle5, MyGLRenderer.light[5].mLightPosInEyeSpace[0], MyGLRenderer.light[5].mLightPosInEyeSpace[1], MyGLRenderer.light[5].mLightPosInEyeSpace[2]);
 
         // Draw the cube.
         GLES20.glDrawArrays(GLES20.GL_TRIANGLES, 0, 36);

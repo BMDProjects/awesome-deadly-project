@@ -20,6 +20,7 @@ public class Light {
                 new String[]{"a_Position"});
     }
 
+    //make private
     public void drawLight(float[] mvpMatrix) {
         GLES20.glUseProgram(mPointProgramHandle);
         final int pointMVPMatrixHandle = GLES20.glGetUniformLocation(mPointProgramHandle, "u_MVPMatrix");
@@ -38,5 +39,9 @@ public class Light {
 
         // Draw the point.
         GLES20.glDrawArrays(GLES20.GL_POINTS, 0, 1);
+    }
+
+    public static void drawAllLight() {
+
     }
 }

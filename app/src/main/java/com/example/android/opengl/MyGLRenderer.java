@@ -19,11 +19,12 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
     private static final String TAG = "MyGLRenderer";
     private Cube   mCube;
     private Cube   mCube2;
-    private Cube   mCube3;
+    private Room   bigRoom;
     private Cube   centreCube;
 
     //has to be public because cube has to access it
-    public static Light light1;
+    public static int amountOfLights = 6;
+    public static Light light[] = new Light[6];
 
     // mMVPMatrix is an abbreviation for "Model View Projection Matrix"
     private final float[] mMVPMatrix = new float[16];
@@ -117,6 +118,7 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
         // GLES20.glBlendFunc(GLES20.GL_ONE, GLES20.GL_ONE_MINUS_SRC_ALPHA);B
         //GLES20.glEnable(GLES20.GL_NORMALIZE);
         GLES20.glEnable(GLES20.GL_DEPTH_TEST);
+       // GLES20.glEnable(GLES20.GL_CULL_FACE);
         //unused.glEnable(GL_RESCALE_NORMAL);
         GLES20.glEnable(GLES20.GL_VERTEX_ATTRIB_ARRAY_NORMALIZED);
         // GLES20.glLightModeli(GL_LIGHT_MODEL_TWO_SIDE, GL_TRUE);
@@ -127,10 +129,12 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
 
         mCube   = new Cube();
         mCube2 = new Cube();
-        mCube3 = new Cube();
+        bigRoom = new Room();
         centreCube = new Cube();
 
-        light1 = new Light();
+        for (int i = 0; i < amountOfLights; i++) {
+            light[i] = new Light();
+        }
 
         /*theJourney[0][0] = 15f;
         theJourney[0][1] = -10f;
@@ -154,7 +158,6 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
 
     @Override
     public void onDrawFrame(GL10 unused) {
-        float[] scratch = new float[16];
         float[] sqScratch = new float[16];
 
         // Draw background color
@@ -278,26 +281,93 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
         float sqAngle = (360.0f / 10000.0f) * ((int) time);
 
 
-        // Calculate position of the light. Rotate and then push into the distance.
-        Matrix.setIdentityM(light1.mLightModelMatrix, 0);
-        Matrix.translateM(light1.mLightModelMatrix, 0, 0.0f, 0.0f, -2.0f);
-        Matrix.rotateM(light1.mLightModelMatrix, 0, sqAngle, 0.0f, 1.0f, 0.0f);
-        Matrix.translateM(light1.mLightModelMatrix, 0, 0.0f, 0.0f, 2.0f);
+        // Calculate position of the light[0]. Coordinate location.
+        Matrix.setIdentityM(light[0].mLightModelMatrix, 0);
+        Matrix.setIdentityM(mMVPMatrix, 0);
+        moveObject(light[0].mLightPosInWorldSpace,theJourney[coord][0] + 2.0f, theJourney[coord][1] + 2.0f, theJourney[coord][2], 0.3f );
+        Matrix.translateM(light[0].mLightModelMatrix, 0, light[0].mLightPosInWorldSpace[0], light[0].mLightPosInWorldSpace[1], light[0].mLightPosInWorldSpace[2]);
 
-        Matrix.multiplyMV(light1.mLightPosInWorldSpace, 0, light1.mLightModelMatrix, 0, light1.mLightPosInModelSpace, 0);
-        Matrix.multiplyMV(light1.mLightPosInEyeSpace, 0, mViewMatrix, 0, light1.mLightPosInWorldSpace, 0);
+        Matrix.multiplyMV(light[0].mLightPosInWorldSpace, 0, light[0].mLightModelMatrix, 0, light[0].mLightPosInModelSpace, 0);
+        Matrix.multiplyMV(light[0].mLightPosInEyeSpace, 0, mViewMatrix, 0, light[0].mLightPosInWorldSpace, 0);
 
-        Matrix.multiplyMM(mMVPMatrix, 0, mViewMatrix, 0, light1.mLightModelMatrix, 0);
+        Matrix.multiplyMM(mMVPMatrix, 0, mViewMatrix, 0, light[0].mLightModelMatrix, 0);
         Matrix.multiplyMM(mMVPMatrix, 0, mProjectionMatrix, 0, mMVPMatrix, 0);
-        light1.drawLight(mMVPMatrix);
+        light[0].drawLight(mMVPMatrix);
 
+        //light[1]. Rotate and then push into the distance.
+        Matrix.setIdentityM(light[1].mLightModelMatrix, 0);
+        Matrix.setIdentityM(mMVPMatrix, 0);
+        Matrix.translateM(light[1].mLightModelMatrix, 0, 30.0f, 30.0f, 30.0f);
+        Matrix.rotateM(light[1].mLightModelMatrix, 0, sqAngle, 0.0f, 1.0f, 0.0f);
+        Matrix.translateM(light[1].mLightModelMatrix, 0, 0.0f, 0.0f, 2.0f);
+
+        Matrix.multiplyMV(light[1].mLightPosInWorldSpace, 0, light[1].mLightModelMatrix, 0, light[1].mLightPosInModelSpace, 0);
+        Matrix.multiplyMV(light[1].mLightPosInEyeSpace, 0, mViewMatrix, 0, light[1].mLightPosInWorldSpace, 0);
+
+        Matrix.multiplyMM(mMVPMatrix, 0, mViewMatrix, 0, light[1].mLightModelMatrix, 0);
+        Matrix.multiplyMM(mMVPMatrix, 0, mProjectionMatrix, 0, mMVPMatrix, 0);
+        light[1].drawLight(mMVPMatrix);
+
+        //light[2]
+        Matrix.setIdentityM(light[2].mLightModelMatrix, 0);
+        Matrix.setIdentityM(mMVPMatrix, 0);
+        Matrix.translateM(light[2].mLightModelMatrix, 0, -30.0f, -30.0f, -30.0f);
+        Matrix.rotateM(light[2].mLightModelMatrix, 0, sqAngle, 0.0f, 1.0f, 0.0f);
+        Matrix.translateM(light[2].mLightModelMatrix, 0, 0.0f, 0.0f, 2.0f);
+
+        Matrix.multiplyMV(light[2].mLightPosInWorldSpace, 0, light[2].mLightModelMatrix, 0, light[2].mLightPosInModelSpace, 0);
+        Matrix.multiplyMV(light[2].mLightPosInEyeSpace, 0, mViewMatrix, 0, light[2].mLightPosInWorldSpace, 0);
+
+        Matrix.multiplyMM(mMVPMatrix, 0, mViewMatrix, 0, light[2].mLightModelMatrix, 0);
+        Matrix.multiplyMM(mMVPMatrix, 0, mProjectionMatrix, 0, mMVPMatrix, 0);
+        light[2].drawLight(mMVPMatrix);
+
+        //light[3]
+        Matrix.setIdentityM(light[3].mLightModelMatrix, 0);
+        Matrix.setIdentityM(mMVPMatrix, 0);
+        Matrix.translateM(light[3].mLightModelMatrix, 0, 30.0f, -30.0f, -30.0f);
+        Matrix.rotateM(light[3].mLightModelMatrix, 0, sqAngle, 0.0f, 1.0f, 0.0f);
+        Matrix.translateM(light[3].mLightModelMatrix, 0, 0.0f, 0.0f, 2.0f);
+
+        Matrix.multiplyMV(light[3].mLightPosInWorldSpace, 0, light[3].mLightModelMatrix, 0, light[3].mLightPosInModelSpace, 0);
+        Matrix.multiplyMV(light[3].mLightPosInEyeSpace, 0, mViewMatrix, 0, light[3].mLightPosInWorldSpace, 0);
+
+        Matrix.multiplyMM(mMVPMatrix, 0, mViewMatrix, 0, light[3].mLightModelMatrix, 0);
+        Matrix.multiplyMM(mMVPMatrix, 0, mProjectionMatrix, 0, mMVPMatrix, 0);
+        light[3].drawLight(mMVPMatrix);
+
+        //light[4]
+        Matrix.setIdentityM(light[4].mLightModelMatrix, 0);
+        Matrix.setIdentityM(mMVPMatrix, 0);
+        Matrix.translateM(light[4].mLightModelMatrix, 0, -30.0f, 30.0f, -30.0f);
+        Matrix.rotateM(light[4].mLightModelMatrix, 0, sqAngle, 0.0f, 1.0f, 0.0f);
+        Matrix.translateM(light[4].mLightModelMatrix, 0, 0.0f, 0.0f, 2.0f);
+
+        Matrix.multiplyMV(light[4].mLightPosInWorldSpace, 0, light[4].mLightModelMatrix, 0, light[4].mLightPosInModelSpace, 0);
+        Matrix.multiplyMV(light[4].mLightPosInEyeSpace, 0, mViewMatrix, 0, light[4].mLightPosInWorldSpace, 0);
+
+        Matrix.multiplyMM(mMVPMatrix, 0, mViewMatrix, 0, light[4].mLightModelMatrix, 0);
+        Matrix.multiplyMM(mMVPMatrix, 0, mProjectionMatrix, 0, mMVPMatrix, 0);
+        light[4].drawLight(mMVPMatrix);
+
+        //light[5]
+        Matrix.setIdentityM(light[5].mLightModelMatrix, 0);
+        Matrix.setIdentityM(mMVPMatrix, 0);
+        Matrix.translateM(light[5].mLightModelMatrix, 0, -30.0f, -30.0f, 30.0f);
+        Matrix.rotateM(light[5].mLightModelMatrix, 0, sqAngle, 0.0f, 1.0f, 0.0f);
+        Matrix.translateM(light[5].mLightModelMatrix, 0, 0.0f, 0.0f, 2.0f);
+
+        Matrix.multiplyMV(light[5].mLightPosInWorldSpace, 0, light[5].mLightModelMatrix, 0, light[5].mLightPosInModelSpace, 0);
+        Matrix.multiplyMV(light[5].mLightPosInEyeSpace, 0, mViewMatrix, 0, light[5].mLightPosInWorldSpace, 0);
+
+        Matrix.multiplyMM(mMVPMatrix, 0, mViewMatrix, 0, light[5].mLightModelMatrix, 0);
+        Matrix.multiplyMM(mMVPMatrix, 0, mProjectionMatrix, 0, mMVPMatrix, 0);
+        light[5].drawLight(mMVPMatrix);
 
 
 
         Matrix.setIdentityM(sqScratch, 0);
         Matrix.setIdentityM(mMVPMatrix, 0);
-
-
 
         Matrix.translateM(sqScratch, 0, centerOfCubeWorldSpace[0], centerOfCubeWorldSpace[1], centerOfCubeWorldSpace[2]);
 
@@ -344,7 +414,7 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
         // Matrix.multiplyMM(mMVPMatrix, 0, sqScratch, 0, mViewMatrix, 0);
         //  Matrix.multiplyMM(mMVPMatrix, 0, mProjectionMatrix, 0, mMVPMatrix, 0);
 
-        mCube2.draw5(sqScratch, 50.0f);
+        bigRoom.drawRoom(sqScratch, 50.0f);
 
 
         //cube 3
