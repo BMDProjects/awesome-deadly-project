@@ -4,7 +4,7 @@
     <!-- From: file:/C:/Users/Ben/AndroidStudioProjects/awesome-deadly-project-master/app/src/main/res/values/strings.xml -->
     <eat-comment />
 
-    <string name="app_name">RAVING SHAPES</string>
+    <string name="app_name">The Dolphin Project</string>
     <string name="hello">Hello, OpenGL ES 2.0!</string>
 
 </resources>

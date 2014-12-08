@@ -16,11 +16,21 @@
             <file
                 path="C:\Users\Ben\AndroidStudioProjects\awesome-deadly-project-master\app\src\main\res\values\strings.xml"
                 qualifiers="" >
-                <string name="app_name" >RAVING SHAPES
+                <string name="app_name" >The Dolphin Project
                 </string>
                 <string name="hello" >Hello, OpenGL ES 2.0!
                 </string>
             </file>
+            <file
+                name="newkey"
+                path="C:\Users\Ben\AndroidStudioProjects\awesome-deadly-project-master\app\src\main\res\raw\newkey.obj"
+                qualifiers=""
+                type="raw" />
+            <file
+                name="ball"
+                path="C:\Users\Ben\AndroidStudioProjects\awesome-deadly-project-master\app\src\main\res\raw\ball.obj"
+                qualifiers=""
+                type="raw" />
         </source>
         <source path="C:\Users\Ben\AndroidStudioProjects\awesome-deadly-project-master\app\build\generated\res\rs\debug" />
         <source path="C:\Users\Ben\AndroidStudioProjects\awesome-deadly-project-master\app\build\generated\res\generated\debug" />

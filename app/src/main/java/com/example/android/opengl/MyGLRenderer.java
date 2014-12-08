@@ -11,16 +11,24 @@ import android.opengl.Matrix;
 import android.os.SystemClock;
 import android.util.Log;
 import android.content.Context;
+
+import java.io.BufferedReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
 import java.lang.Math;
 
 public class MyGLRenderer implements GLSurfaceView.Renderer {
     Context mContext;
+
+    private OBJParser parser;
 
     private static final String TAG = "MyGLRenderer";
     private Cube   mCube;
     private Cube   mCube2;
     private Room   bigRoom;
     private Cube   centreCube;
+    private Dolphin dolphin;
 
     //has to be public because cube has to access it
     public static int amountOfLights = 6;
@@ -131,6 +139,17 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
         mCube2 = new Cube();
         bigRoom = new Room();
         centreCube = new Cube();
+        parser=new OBJParser(mContext);
+       // dolphin = parser.parseOBJ("C:\\Users\\Ben\\AndroidStudioProjects\\awesome-deadly-project-master\\app\\src\\main\\res\\raw\\newkey.obj");
+       // dolphin = parser.parseOBJ("C:/Users/Ben/AndroidStudioProjects/awesome-deadly-project-master/app/src/main/res/raw/newkey.obj");
+
+        //dolphin = parser.parseOBJ("Crthy");
+        //dolphin = parser.parseOBJ("newkey.obj");
+        //dolphin = new Dolphin();
+        dolphin = parser.parseOBJ(R.raw.ball);
+       /* InputStream raw = mContext.getAssets().open("filename.ext");
+
+        Reader is = new BufferedReader(new InputStreamReader(raw, "UTF8"));*/
 
         for (int i = 0; i < amountOfLights; i++) {
             light[i] = new Light();
@@ -181,6 +200,15 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
         // eyeY = (float)(radius * Math.cos(theta));
 
         reachedDestination = moveObject(centerOfCubeWorldSpace, theJourney[coord][0], theJourney[coord][1], theJourney[coord][2], 0.1f);
+        if(reachedDestination){
+            reachedDestination = false;
+            reachedAngle = false;
+            firstTime = true;
+            coord++;
+            if(coord > pointsOnJourney - 1) coord = 0;
+        }
+
+        reachedDestination = moveObject(dolphin.centerOfDolphinWorldSpace, theJourney[coord][0], theJourney[coord][1], theJourney[coord][2], 0.1f);
         if(reachedDestination){
             reachedDestination = false;
             reachedAngle = false;
@@ -281,6 +309,8 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
         float sqAngle = (360.0f / 10000.0f) * ((int) time);
 
 
+
+
         // Calculate position of the light[0]. Coordinate location.
         Matrix.setIdentityM(light[0].mLightModelMatrix, 0);
         Matrix.setIdentityM(mMVPMatrix, 0);
@@ -365,6 +395,11 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
         light[5].drawLight(mMVPMatrix);
 
 
+        Matrix.setIdentityM(dolphin.dolphinModel, 0);
+
+        Matrix.translateM(dolphin.dolphinModel, 0, dolphin.centerOfDolphinWorldSpace[0], dolphin.centerOfDolphinWorldSpace[1], dolphin.centerOfDolphinWorldSpace[2]);
+
+        dolphin.drawDolphin(dolphin.dolphinModel, 1.0f);
 
         Matrix.setIdentityM(sqScratch, 0);
         Matrix.setIdentityM(mMVPMatrix, 0);
@@ -397,7 +432,7 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
         Matrix.multiplyMV(centerOfCubeWorldSpace , 0, sqScratch, 0, centerOfCubeModelSpace , 0);
         Matrix.multiplyMV(centerOfCubeEyeSpace , 0, mViewMatrix, 0, centerOfCubeWorldSpace , 0);
 
-        mCube.draw5(sqScratch, 1.0f);
+       // mCube.draw5(sqScratch, 1.0f);
         //mCube.draw3(sqScratch, 1.0f);
         //  Matrix.multiplyMV(mLightPosInWorldSpace, 0, sqScratch, 0, mLightPosInModelSpace, 0);
         // Matrix.multiplyMV(mLightPosInEyeSpace, 0, mViewMatrix, 0, mLightPosInWorldSpace, 0);
@@ -438,12 +473,12 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
         double [] angles = new double [2];
         angles = returnAngles(coordinates[0], coordinates[1], coordinates[2], x, y, z);
 
+        if(approxEqual(coordinates[0], x, epsilon) && approxEqual(coordinates[1], y, epsilon)
+                && approxEqual(coordinates[2], z, epsilon)) return true;
+
         coordinates[0] += speed*Math.cos(angles[0]);
         coordinates[1] += speed*Math.sin(angles[0]);
         coordinates[2] += speed*Math.sin(angles[1]);
-
-        if(approxEqual(coordinates[0], x, epsilon) && approxEqual(coordinates[1], y, epsilon)
-                && approxEqual(coordinates[2], z, epsilon)) return true;
 
         return false;
     }

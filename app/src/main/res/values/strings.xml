@@ -17,6 +17,6 @@
 <resources>
 
     <string name="hello">Hello, OpenGL ES 2.0!</string>
-    <string name="app_name">RAVING SHAPES</string>
+    <string name="app_name">The Dolphin Project</string>
 
 </resources>

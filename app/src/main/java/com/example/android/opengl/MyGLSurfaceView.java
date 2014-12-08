@@ -17,7 +17,9 @@ package com.example.android.opengl;
 
 import android.content.Context;
 import android.opengl.GLSurfaceView;
+import android.os.Bundle;
 import android.view.MotionEvent;
+import android.widget.TextView;
 
 /**
  * A view container where OpenGL ES graphics can be drawn on screen.
@@ -27,6 +29,8 @@ import android.view.MotionEvent;
 public class MyGLSurfaceView extends GLSurfaceView {
 
     private final MyGLRenderer mRenderer;
+
+    TextView text;
 
     public MyGLSurfaceView(Context context) {
         super(context);
@@ -38,10 +42,18 @@ public class MyGLSurfaceView extends GLSurfaceView {
         mRenderer = new MyGLRenderer(context);
         setRenderer(mRenderer);
 
+
+
         // Render the view only when there is a change in the drawing data
         // setRenderMode(GLSurfaceView.RENDERMODE_WHEN_DIRTY);
         setRenderMode(GLSurfaceView.RENDERMODE_CONTINUOUSLY);
     }
+
+    //@Override
+    //public void onCreate(Bundle savedInstanceState) {
+        //super.onCreate(savedInstanceState);
+       // setContentView(R.layout.main);
+    //}
 
     private final float TOUCH_SCALE_FACTOR = 90.0f / 320;
     private float mPreviousX;
