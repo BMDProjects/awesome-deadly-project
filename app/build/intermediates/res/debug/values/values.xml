@@ -4,7 +4,8 @@
     <!-- From: file:/C:/Users/Ben/AndroidStudioProjects/awesome-deadly-project-master/app/src/main/res/values/strings.xml -->
     <eat-comment />
 
+    <string name="Camera">Camera</string>
+    <string name="Control">Control</string>
     <string name="app_name">The Dolphin Project</string>
-    <string name="hello">Camera</string>
 
 </resources>

@@ -4,6 +4,11 @@
     <dataSet config="main" >
         <source path="C:\Users\Ben\AndroidStudioProjects\awesome-deadly-project-master\app\src\main\res" >
             <file
+                name="bumpy_bricks_public_domain"
+                path="C:\Users\Ben\AndroidStudioProjects\awesome-deadly-project-master\app\src\main\res\drawable\bumpy_bricks_public_domain.jpg"
+                qualifiers=""
+                type="drawable" />
+            <file
                 name="ic_launcher"
                 path="C:\Users\Ben\AndroidStudioProjects\awesome-deadly-project-master\app\src\main\res\drawable\ic_launcher.png"
                 qualifiers=""
@@ -14,21 +19,18 @@
                 qualifiers=""
                 type="layout" />
             <file
-                path="C:\Users\Ben\AndroidStudioProjects\awesome-deadly-project-master\app\src\main\res\values\strings.xml"
-                qualifiers="" >
-                <string name="app_name" >The Dolphin Project
-                </string>
-                <string name="hello" >Camera
-                </string>
-            </file>
-            <file
-                name="newkey"
-                path="C:\Users\Ben\AndroidStudioProjects\awesome-deadly-project-master\app\src\main\res\raw\newkey.obj"
+                name="ball"
+                path="C:\Users\Ben\AndroidStudioProjects\awesome-deadly-project-master\app\src\main\res\raw\ball.obj"
                 qualifiers=""
                 type="raw" />
             <file
-                name="ball"
-                path="C:\Users\Ben\AndroidStudioProjects\awesome-deadly-project-master\app\src\main\res\raw\ball.obj"
+                name="dolphink"
+                path="C:\Users\Ben\AndroidStudioProjects\awesome-deadly-project-master\app\src\main\res\raw\dolphink.obj"
+                qualifiers=""
+                type="raw" />
+            <file
+                name="newkey"
+                path="C:\Users\Ben\AndroidStudioProjects\awesome-deadly-project-master\app\src\main\res\raw\newkey.obj"
                 qualifiers=""
                 type="raw" />
             <file
@@ -37,10 +39,15 @@
                 qualifiers=""
                 type="raw" />
             <file
-                name="bumpy_bricks_public_domain"
-                path="C:\Users\Ben\AndroidStudioProjects\awesome-deadly-project-master\app\src\main\res\drawable\bumpy_bricks_public_domain.jpg"
-                qualifiers=""
-                type="drawable" />
+                path="C:\Users\Ben\AndroidStudioProjects\awesome-deadly-project-master\app\src\main\res\values\strings.xml"
+                qualifiers="" >
+                <string name="Camera" >Camera
+                </string>
+                <string name="Control" >Control
+                </string>
+                <string name="app_name" >The Dolphin Project
+                </string>
+            </file>
         </source>
         <source path="C:\Users\Ben\AndroidStudioProjects\awesome-deadly-project-master\app\build\generated\res\rs\debug" />
         <source path="C:\Users\Ben\AndroidStudioProjects\awesome-deadly-project-master\app\build\generated\res\generated\debug" />

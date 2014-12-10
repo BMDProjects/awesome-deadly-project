@@ -24,11 +24,13 @@ public final class R {
     }
     public static final class raw {
         public static final int ball=0x7f040000;
-        public static final int newkey=0x7f040001;
-        public static final int untitled=0x7f040002;
+        public static final int dolphink=0x7f040001;
+        public static final int newkey=0x7f040002;
+        public static final int untitled=0x7f040003;
     }
     public static final class string {
-        public static final int app_name=0x7f050000;
-        public static final int hello=0x7f050001;
+        public static final int Camera=0x7f050000;
+        public static final int Control=0x7f050001;
+        public static final int app_name=0x7f050002;
     }
 }

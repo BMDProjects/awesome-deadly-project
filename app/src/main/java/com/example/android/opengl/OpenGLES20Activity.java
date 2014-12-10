@@ -20,11 +20,12 @@ import android.content.Context;
 import android.opengl.GLSurfaceView;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
+import android.view.View;
+import android.widget.Button;
 
 public class OpenGLES20Activity extends Activity {
 
     private MyGLSurfaceView mGLView;
-   // private Context context;
     private MyGLRenderer mRenderer;
 
     @Override
@@ -39,6 +40,19 @@ public class OpenGLES20Activity extends Activity {
        // setContentView(R.layout.main);
         //setContentView(mGLView);
 
+        final Button button = (Button) findViewById(R.id.button_set_min_filter);
+        button.setOnClickListener(new View.OnClickListener() {
+              public void onClick(View v) {
+                  Camera();
+              }
+          });
+
+        final Button button2 = (Button) findViewById(R.id.button_set_mag_filter);
+        button2.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                changeControl();
+            }
+        });
 
         mGLView.setEGLContextClientVersion(2);
 
@@ -49,6 +63,18 @@ public class OpenGLES20Activity extends Activity {
         mRenderer = new MyGLRenderer(this);
        // mGLView.setRenderer(mRenderer, displayMetrics.density);
         mGLView.setRenderer(mRenderer, displayMetrics.density);
+    }
+
+    public void Camera() {
+        mRenderer.camera.changeCameraState();
+    }
+
+    public void changeControl() {
+        if (mRenderer.camera.control == true) mRenderer.camera.control = false;
+        else {
+            mRenderer.camera.control = true;
+            mRenderer.camera.state = 3;
+        }
     }
 
     @Override

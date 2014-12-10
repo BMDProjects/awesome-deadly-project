@@ -16,12 +16,15 @@
             android:id="@+id/button_set_min_filter"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/hello" />
+            android:text="@string/Camera"
+            android:onClick="Camera"
+            />
         <Button
             android:id="@+id/button_set_mag_filter"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/hello" />
+            android:text="@string/Control"
+            android:onClick="Control"/>
     </LinearLayout>
 
 </FrameLayout><!-- From: file:/C:/Users/Ben/AndroidStudioProjects/awesome-deadly-project-master/app/src/main/res/layout/main.xml -->

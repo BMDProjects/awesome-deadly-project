@@ -19,15 +19,16 @@ public class Dolphin {
     public final float[] centerOfDolphinWorldSpace = new float[4];
 
     private FloatBuffer mDolphinVertexBuffer;
+    private FloatBuffer mDolphinNormalBuffer;
     private ShortBuffer mDolphinDrawOrder;
    /* private final FloatBuffer mDolphinColors;
    // private final FloatBuffer mDolphinNormals;*/
     private final int mDolphinProgram;
     private int mPositionHandle;
     private int mColorHandle;
+    private int  mNormalHandle;
    private int mMVPMatrixHandle;
-  /*  private int mMVMatrixHandle;
-    private int mMMatrixHandle;
+    private int mMVMatrixHandle;
     private int mLightPosHandle0;
     private int mLightPosHandle1;
     private int mLightPosHandle2;
@@ -35,31 +36,16 @@ public class Dolphin {
     private int mLightPosHandle4;
     private int mLightPosHandle5;
     private int distanceCorrectionHandle;
-    private int mNormalHandle;*/
 
     public int delayer = 20;
 
     Vector<Float> v;
     Vector<Float> vn;
     Vector<Float> vt;
+    Vector<Short> faces;
    // Vector<TDModelPart> parts;
 
     static final int COORDS_PER_VERTEX = 3;
-
-    private final short[] drawList = {
-            2, 3, 4,
-            8, 7, 6,
-            1, 5, 6,
-            2, 6, 7,
-            7, 8, 4,
-            1, 4 ,8,
-            1 ,2 ,4,
-            5, 8 ,6,
-            2, 1, 6,
-            3, 2, 7,
-            3, 7, 4,
-            5, 1, 8
-    };
 
     /*final float[] mDolphinPositions =
             {
@@ -88,19 +74,20 @@ public class Dolphin {
                 new String[]{"vPosition"});
     }*/
 
-    public Dolphin(Vector<Float> v, Vector<Float> vn, Vector<Float> vt) {
+    public Dolphin(Vector<Float> v, Vector<Float> vn, Vector<Float> vt, Vector<Short> faces) {
         super();
         this.v = v;
         this.vn = vn;
         this.vt = vt;
+        this.faces = faces;
 
         buildVertexBuffer();
         buildVertexBuffer2();
 
-        int dolphinVertexShader = Shaders.loadShader(GLES20.GL_VERTEX_SHADER, shaders.getVertexShader(1));
-        int dolphinfragmentShader = Shaders.loadShader(GLES20.GL_FRAGMENT_SHADER, shaders.getFragmentShader(1));
+        int dolphinVertexShader = Shaders.loadShader(GLES20.GL_VERTEX_SHADER, shaders.getVertexShader(6));
+        int dolphinfragmentShader = Shaders.loadShader(GLES20.GL_FRAGMENT_SHADER, shaders.getFragmentShader(6));
         mDolphinProgram = Shaders.createAndLinkProgram(dolphinVertexShader, dolphinfragmentShader,
-                new String[]{"vPosition"});
+                new String[]{"a_Position",  "a_Normal"});
 
        //GLES20.glBindAttribLocation(programHandle, i, attributes[i]);
     }
@@ -113,21 +100,19 @@ public class Dolphin {
         mDolphinVertexBuffer.position(0);
     }
 
-    public void buildVertexBuffer2(){
-       /* ByteBuffer vBuf = ByteBuffer.allocateDirect(v.size() * 4);
+    public void buildVertexBuffer3(){
+        ByteBuffer vBuf = ByteBuffer.allocateDirect(vn.size() * 4);
         vBuf.order(ByteOrder.nativeOrder());
-        mDolphinDrawOrder = vBuf.asFloatBuffer();
-        mDolphinDrawOrder.put(toPrimitiveArrayF(v));
-        mDolphinDrawOrder.position(0);*/
+        mDolphinNormalBuffer = vBuf.asFloatBuffer();
+        mDolphinNormalBuffer.put(toPrimitiveArrayF(vn));
+        mDolphinNormalBuffer.position(0);
+    }
 
-        for (int i = 0; i < drawList.length; i++) {
-            drawList[i] -= 1;
-        }
-
-        ByteBuffer vBuf = ByteBuffer.allocateDirect(drawList.length * 2);
+    public void buildVertexBuffer2(){
+        ByteBuffer vBuf = ByteBuffer.allocateDirect(faces.size() * 2);
         vBuf.order(ByteOrder.nativeOrder());
         mDolphinDrawOrder = vBuf.asShortBuffer();
-        mDolphinDrawOrder.put(drawList);
+        mDolphinDrawOrder.put(toPrimitiveArrayS(faces));
         mDolphinDrawOrder.position(0);
     }
 
@@ -138,6 +123,15 @@ public class Dolphin {
             f[i]=vector.get(i);
         }
         return f;
+    }
+
+    private static short[] toPrimitiveArrayS(Vector<Short> vector){
+        short[] s;
+        s=new short[vector.size()];
+        for (int i=0; i<vector.size(); i++){
+            s[i]=vector.get(i);
+        }
+        return s;
     }
 
     public String toString(){
@@ -190,21 +184,18 @@ public class Dolphin {
         Matrix.setIdentityM(mMVMatrix, 0);
 
         mMVPMatrixHandle = GLES20.glGetUniformLocation(mDolphinProgram, "uMVPMatrix");
-      /*  mMVMatrixHandle = GLES20.glGetUniformLocation(mProgramPerPixel, "u_MVMatrix");
+        mMVMatrixHandle = GLES20.glGetUniformLocation(mDolphinProgram, "u_MVMatrix");
 
-        mLightPosHandle0 = GLES20.glGetUniformLocation(mProgramPerPixel, "u_LightPos0");
-        mLightPosHandle1 = GLES20.glGetUniformLocation(mProgramPerPixel, "u_LightPos1");
-        mLightPosHandle2 = GLES20.glGetUniformLocation(mProgramPerPixel, "u_LightPos2");
-        mLightPosHandle3 = GLES20.glGetUniformLocation(mProgramPerPixel, "u_LightPos3");
-        mLightPosHandle4 = GLES20.glGetUniformLocation(mProgramPerPixel, "u_LightPos4");
-        mLightPosHandle5 = GLES20.glGetUniformLocation(mProgramPerPixel, "u_LightPos5");
+        mLightPosHandle0 = GLES20.glGetUniformLocation(mDolphinProgram, "u_LightPos0");
+        mLightPosHandle1 = GLES20.glGetUniformLocation(mDolphinProgram, "u_LightPos1");
+        mLightPosHandle2 = GLES20.glGetUniformLocation(mDolphinProgram, "u_LightPos2");
+        mLightPosHandle3 = GLES20.glGetUniformLocation(mDolphinProgram, "u_LightPos3");
+        mLightPosHandle4 = GLES20.glGetUniformLocation(mDolphinProgram, "u_LightPos4");
+        mLightPosHandle5 = GLES20.glGetUniformLocation(mDolphinProgram, "u_LightPos5");
+        distanceCorrectionHandle = GLES20.glGetUniformLocation(mDolphinProgram, "distanceCorrection");
 
-        mPositionHandle = GLES20.glGetAttribLocation(mProgramPerPixel, "a_Position");
-
-        mNormalHandle = GLES20.glGetAttribLocation(mProgramPerPixel, "a_Normal");*/
-
-        mPositionHandle = GLES20.glGetAttribLocation(mDolphinProgram, "vPosition");
-       // mColorHandle = GLES20.glGetAttribLocation(mDolphinProgram, "vColor");
+        mNormalHandle = GLES20.glGetAttribLocation(mDolphinProgram, "a_Normal");
+        mPositionHandle = GLES20.glGetAttribLocation(mDolphinProgram, "a_Position");
         mColorHandle = GLES20.glGetUniformLocation(mDolphinProgram, "vColor");
 
         //Pass in vertex position information
@@ -217,13 +208,13 @@ public class Dolphin {
         mCubeColors.position(0);
         GLES20.glVertexAttribPointer(mColorHandle, mColorDataSize, GLES20.GL_FLOAT, false,
                 0, mCubeColors);
-        GLES20.glEnableVertexAttribArray(mColorHandle);
+        GLES20.glEnableVertexAttribArray(mColorHandle);*/
 
         // Pass in the normal information
-        mCubeNormals.position(0);
+        mDolphinNormalBuffer.position(0);
         GLES20.glVertexAttribPointer(mNormalHandle, mNormalDataSize, GLES20.GL_FLOAT, false,
-                0, mCubeNormals);
-        GLES20.glEnableVertexAttribArray(mNormalHandle);*/
+                0, mDolphinNormalBuffer);
+        GLES20.glEnableVertexAttribArray(mNormalHandle);
 
 
         float[] scale_matrix = new float[16];
@@ -241,17 +232,19 @@ public class Dolphin {
 
         GLES20.glUniform4fv(mColorHandle, 1, color, 0);
 
-      /*  GLES20.glUniform3f(mLightPosHandle0, MyGLRenderer.light[0].mLightPosInEyeSpace[0], MyGLRenderer.light[0].mLightPosInEyeSpace[1], MyGLRenderer.light[0].mLightPosInEyeSpace[2]);
+        GLES20.glUniform3f(mLightPosHandle0, MyGLRenderer.light[0].mLightPosInEyeSpace[0], MyGLRenderer.light[0].mLightPosInEyeSpace[1], MyGLRenderer.light[0].mLightPosInEyeSpace[2]);
         GLES20.glUniform3f(mLightPosHandle1, MyGLRenderer.light[1].mLightPosInEyeSpace[0], MyGLRenderer.light[1].mLightPosInEyeSpace[1], MyGLRenderer.light[1].mLightPosInEyeSpace[2]);
         GLES20.glUniform3f(mLightPosHandle2, MyGLRenderer.light[2].mLightPosInEyeSpace[0], MyGLRenderer.light[2].mLightPosInEyeSpace[1], MyGLRenderer.light[2].mLightPosInEyeSpace[2]);
         GLES20.glUniform3f(mLightPosHandle3, MyGLRenderer.light[3].mLightPosInEyeSpace[0], MyGLRenderer.light[3].mLightPosInEyeSpace[1], MyGLRenderer.light[3].mLightPosInEyeSpace[2]);
         GLES20.glUniform3f(mLightPosHandle4, MyGLRenderer.light[4].mLightPosInEyeSpace[0], MyGLRenderer.light[4].mLightPosInEyeSpace[1], MyGLRenderer.light[4].mLightPosInEyeSpace[2]);
-        GLES20.glUniform3f(mLightPosHandle5, MyGLRenderer.light[5].mLightPosInEyeSpace[0], MyGLRenderer.light[5].mLightPosInEyeSpace[1], MyGLRenderer.light[5].mLightPosInEyeSpace[2]);*/
+        GLES20.glUniform3f(mLightPosHandle5, MyGLRenderer.light[5].mLightPosInEyeSpace[0], MyGLRenderer.light[5].mLightPosInEyeSpace[1], MyGLRenderer.light[5].mLightPosInEyeSpace[2]);
+
+        GLES20.glUniform1f(distanceCorrectionHandle, 0.1f);
 
         // Draw the cube.
         //GLES20.glDrawArrays(GLES20.GL_TRIANGLES, 0, v.size());
         //GLES20.glDrawElements(GLES20.GL_TRIANGLES, v.size(), );
-        GLES20.glDrawElements(GLES20.GL_TRIANGLES, drawList.length,
+        GLES20.glDrawElements(GLES20.GL_TRIANGLES, faces.size(),
                 GLES20.GL_UNSIGNED_SHORT, mDolphinDrawOrder);
 
         GLES20.glDisableVertexAttribArray(mPositionHandle);

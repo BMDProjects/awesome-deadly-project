@@ -16,7 +16,8 @@
 -->
 <resources>
 
-    <string name="hello">Camera</string>
+    <string name="Camera">Camera</string>
+    <string name="Control">Control</string>
     <string name="app_name">The Dolphin Project</string>
 
 </resources>

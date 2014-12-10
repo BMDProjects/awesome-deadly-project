@@ -37,7 +37,7 @@ public class MyGLSurfaceView extends GLSurfaceView {
         // Set the Renderer for drawing on the GLSurfaceView
         //mRenderer = new MyGLRenderer(context);
         //setRenderer(renderer);
-       // mRenderer = renderer;
+        // mRenderer = renderer;
         // Create an OpenGL ES 2.0 context.
        /* setEGLContextClientVersion(2);
 */
@@ -55,19 +55,12 @@ public class MyGLSurfaceView extends GLSurfaceView {
         super(context, attrs);
     }
 
-    public void setRenderer(MyGLRenderer renderer, float density)
-    {
+    public void setRenderer(MyGLRenderer renderer, float density) {
         mRenderer = renderer;
         mDensity = density;
         super.setRenderer(renderer);
     }
 
-    /*@Override
-    public void setRenderer(MyGLRenderer renderer)
-    {
-        mRenderer = renderer;
-        super.setRenderer(renderer);
-    }*/
 
     private final float TOUCH_SCALE_FACTOR = 90.0f / 320;
     private float mPreviousX;
@@ -79,17 +72,28 @@ public class MyGLSurfaceView extends GLSurfaceView {
         // and other input controls. In this case, you are only
         // interested in events where the touch position changed.
 
-        //  float x = e.getX();
-        //    float y = e.getY();
+        float x = e.getX();
+        float y = e.getY();
 
 
+        // if (MyGLRenderer.camera.control) {
+        if (e.getAction() == MotionEvent.ACTION_DOWN) {
+            final float angularSpeed = 0.01f;
+            float xCoord = (float) (2.0f * (x / getWidth()) - 1.0);
+            float yCoord = (float) (2.0f * (y / getHeight()) - 1.0);
+            setRenderMode(GLSurfaceView.RENDERMODE_WHEN_DIRTY);
+            if (yCoord >= -1 && yCoord <= -0.5 && xCoord <= 0.5 && xCoord >= -0.5f) {
+                queueEvent(new Runnable() {
+                    @Override
+                    public void run() {
+                        mRenderer.setXyCurrAngle(MyGLRenderer.getXyCurrAngle() + angularSpeed);
+                    }
+                });
+            }
 
-
-        switch (e.getAction()) {
-            case MotionEvent.ACTION_DOWN:
-                mRenderer.changeCameraState();
-                mRenderer.touched = true;
-                break;
+            requestRender();
+            setRenderMode(GLSurfaceView.RENDERMODE_CONTINUOUSLY);
+            return true;
 
 /*                float dx = x - mPreviousX;
                 float dy = y - mPreviousY;
@@ -121,14 +125,11 @@ public class MyGLSurfaceView extends GLSurfaceView {
                 requestRender();
                 setRenderMode(GLSurfaceView.RENDERMODE_CONTINUOUSLY);*/
 
-            default:
-                break;
+            // }
+            // mPreviousX = x;
+            // mPreviousY = y;
+
         }
-
-
-
-        // mPreviousX = x;
-        // mPreviousY = y;
-        return true;
+        return super.onTouchEvent(e);
     }
 }
