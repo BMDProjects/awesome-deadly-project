@@ -18,6 +18,7 @@ package com.example.android.opengl;
 import android.content.Context;
 import android.opengl.GLSurfaceView;
 import android.os.Bundle;
+import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.widget.TextView;
 
@@ -28,32 +29,45 @@ import android.widget.TextView;
  */
 public class MyGLSurfaceView extends GLSurfaceView {
 
-    private final MyGLRenderer mRenderer;
+    private MyGLRenderer mRenderer;
+    private float mDensity;
 
-    TextView text;
-
-    public MyGLSurfaceView(Context context) {
+    public MyGLSurfaceView(Context context, MyGLRenderer renderer) {
         super(context);
-
-        // Create an OpenGL ES 2.0 context.
-        setEGLContextClientVersion(2);
-
         // Set the Renderer for drawing on the GLSurfaceView
-        mRenderer = new MyGLRenderer(context);
-        setRenderer(mRenderer);
-
-
-
+        //mRenderer = new MyGLRenderer(context);
+        //setRenderer(renderer);
+       // mRenderer = renderer;
+        // Create an OpenGL ES 2.0 context.
+       /* setEGLContextClientVersion(2);
+*/
         // Render the view only when there is a change in the drawing data
         // setRenderMode(GLSurfaceView.RENDERMODE_WHEN_DIRTY);
         setRenderMode(GLSurfaceView.RENDERMODE_CONTINUOUSLY);
     }
 
-    //@Override
-    //public void onCreate(Bundle savedInstanceState) {
-        //super.onCreate(savedInstanceState);
-       // setContentView(R.layout.main);
-    //}
+    public MyGLSurfaceView(Context context, AttributeSet attrs, int defStyle) {
+        //super(context, attrs, defStyle);
+        super(context, attrs);
+    }
+
+    public MyGLSurfaceView(Context context, AttributeSet attrs) {
+        super(context, attrs);
+    }
+
+    public void setRenderer(MyGLRenderer renderer, float density)
+    {
+        mRenderer = renderer;
+        mDensity = density;
+        super.setRenderer(renderer);
+    }
+
+    /*@Override
+    public void setRenderer(MyGLRenderer renderer)
+    {
+        mRenderer = renderer;
+        super.setRenderer(renderer);
+    }*/
 
     private final float TOUCH_SCALE_FACTOR = 90.0f / 320;
     private float mPreviousX;

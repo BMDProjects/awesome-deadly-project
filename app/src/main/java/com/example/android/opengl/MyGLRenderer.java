@@ -137,16 +137,16 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
 
         mCube   = new Cube();
         mCube2 = new Cube();
-        bigRoom = new Room();
+        bigRoom = new Room(mContext);
         centreCube = new Cube();
-        parser=new OBJParser(mContext);
+        parser = new OBJParser(mContext);
        // dolphin = parser.parseOBJ("C:\\Users\\Ben\\AndroidStudioProjects\\awesome-deadly-project-master\\app\\src\\main\\res\\raw\\newkey.obj");
        // dolphin = parser.parseOBJ("C:/Users/Ben/AndroidStudioProjects/awesome-deadly-project-master/app/src/main/res/raw/newkey.obj");
 
         //dolphin = parser.parseOBJ("Crthy");
         //dolphin = parser.parseOBJ("newkey.obj");
         //dolphin = new Dolphin();
-        dolphin = parser.parseOBJ(R.raw.ball);
+        dolphin = parser.parseOBJ(R.raw.untitled);
        /* InputStream raw = mContext.getAssets().open("filename.ext");
 
         Reader is = new BufferedReader(new InputStreamReader(raw, "UTF8"));*/
@@ -399,7 +399,7 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
 
         Matrix.translateM(dolphin.dolphinModel, 0, dolphin.centerOfDolphinWorldSpace[0], dolphin.centerOfDolphinWorldSpace[1], dolphin.centerOfDolphinWorldSpace[2]);
 
-        dolphin.drawDolphin(dolphin.dolphinModel, 1.0f);
+        //dolphin.drawDolphin(dolphin.dolphinModel, 1.0f);
 
         Matrix.setIdentityM(sqScratch, 0);
         Matrix.setIdentityM(mMVPMatrix, 0);
@@ -637,18 +637,7 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
      * @param shaderCode - String containing the shader code.
      * @return - Returns an id for the shader.
      */
-    public static int loadShader(int type, String shaderCode){
 
-        // create a vertex shader type (GLES20.GL_VERTEX_SHADER)
-        // or a fragment shader type (GLES20.GL_FRAGMENT_SHADER)
-        int shader = GLES20.glCreateShader(type);
-
-        // add the source code to the shader and compile it
-        GLES20.glShaderSource(shader, shaderCode);
-        GLES20.glCompileShader(shader);
-
-        return shader;
-    }
 
     /**
      * Utility method for debugging OpenGL calls. Provide the name of the call
@@ -668,51 +657,5 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
             Log.e(TAG, glOperation + ": glError " + error);
             throw new RuntimeException(glOperation + ": glError " + error);
         }
-    }
-
-    public static int createAndLinkProgram(final int vertexShaderHandle, final int fragmentShaderHandle, final String[] attributes)
-    {
-        int programHandle = GLES20.glCreateProgram();
-
-        if (programHandle != 0)
-        {
-            // Bind the vertex shader to the program.
-            GLES20.glAttachShader(programHandle, vertexShaderHandle);
-
-            // Bind the fragment shader to the program.
-            GLES20.glAttachShader(programHandle, fragmentShaderHandle);
-
-            // Bind attributes
-            if (attributes != null)
-            {
-                final int size = attributes.length;
-                for (int i = 0; i < size; i++)
-                {
-                    GLES20.glBindAttribLocation(programHandle, i, attributes[i]);
-                }
-            }
-
-            // Link the two shaders together into a program.
-            GLES20.glLinkProgram(programHandle);
-
-            // Get the link status.
-            final int[] linkStatus = new int[1];
-            GLES20.glGetProgramiv(programHandle, GLES20.GL_LINK_STATUS, linkStatus, 0);
-
-            // If the link failed, delete the program.
-            if (linkStatus[0] == 0)
-            {
-                Log.e(TAG, "Error compiling program: " + GLES20.glGetProgramInfoLog(programHandle));
-                GLES20.glDeleteProgram(programHandle);
-                programHandle = 0;
-            }
-        }
-
-        if (programHandle == 0)
-        {
-            throw new RuntimeException("Error creating program.");
-        }
-
-        return programHandle;
     }
 }

@@ -226,26 +226,26 @@ public class Cube {
         mCubeNormals.put(cubeNormalData).position(0);
 
         mProgram = GLES20.glCreateProgram();
-        int vertexShader = MyGLRenderer.loadShader(GLES20.GL_VERTEX_SHADER, shaders.getVertexShader(0));
-        int fragmentShader = MyGLRenderer.loadShader(GLES20.GL_FRAGMENT_SHADER, shaders.getFragmentShader(0));
+        int vertexShader = Shaders.loadShader(GLES20.GL_VERTEX_SHADER, shaders.getVertexShader(0));
+        int fragmentShader = Shaders.loadShader(GLES20.GL_FRAGMENT_SHADER, shaders.getFragmentShader(0));
         GLES20.glAttachShader(mProgram, vertexShader);   // add the vertex shader to program
         GLES20.glAttachShader(mProgram, fragmentShader); // add the fragment shader to program
         GLES20.glLinkProgram(mProgram);                  // create OpenGL program executables
 
 
-        int vertexShader2 = MyGLRenderer.loadShader(GLES20.GL_VERTEX_SHADER, shaders.getVertexShader(2));
-        int fragmentShader2 = MyGLRenderer.loadShader(GLES20.GL_FRAGMENT_SHADER, shaders.getFragmentShader(2));
-        mProgram2 = MyGLRenderer.createAndLinkProgram(vertexShader2, fragmentShader2,
+        int vertexShader2 = Shaders.loadShader(GLES20.GL_VERTEX_SHADER, shaders.getVertexShader(2));
+        int fragmentShader2 = Shaders.loadShader(GLES20.GL_FRAGMENT_SHADER, shaders.getFragmentShader(2));
+        mProgram2 = Shaders.createAndLinkProgram(vertexShader2, fragmentShader2,
                 new String[]{"vPosition", "aColor"});
 
-        int vertexShader4 = MyGLRenderer.loadShader(GLES20.GL_VERTEX_SHADER, shaders.getVertexShader(3));
-        int fragmentShader4 = MyGLRenderer.loadShader(GLES20.GL_FRAGMENT_SHADER, shaders.getFragmentShader(3));
-        mProgram3 = MyGLRenderer.createAndLinkProgram(vertexShader4, fragmentShader4,
+        int vertexShader4 = Shaders.loadShader(GLES20.GL_VERTEX_SHADER, shaders.getVertexShader(3));
+        int fragmentShader4 = Shaders.loadShader(GLES20.GL_FRAGMENT_SHADER, shaders.getFragmentShader(3));
+        mProgram3 = Shaders.createAndLinkProgram(vertexShader4, fragmentShader4,
                 new String[]{"a_Position",  "a_Color", "a_Normal"});
 
-        int perPixelVertexShader = MyGLRenderer.loadShader(GLES20.GL_VERTEX_SHADER, shaders.getVertexShader(4));
-        int perPixelfragmentShader = MyGLRenderer.loadShader(GLES20.GL_FRAGMENT_SHADER, shaders.getFragmentShader(4));
-        mProgramPerPixel = MyGLRenderer.createAndLinkProgram(perPixelVertexShader, perPixelfragmentShader,
+        int perPixelVertexShader = Shaders.loadShader(GLES20.GL_VERTEX_SHADER, shaders.getVertexShader(4));
+        int perPixelfragmentShader = Shaders.loadShader(GLES20.GL_FRAGMENT_SHADER, shaders.getFragmentShader(4));
+        mProgramPerPixel = Shaders.createAndLinkProgram(perPixelVertexShader, perPixelfragmentShader,
                 new String[]{"a_Position",  "a_Color", "a_Normal"});
     }
 

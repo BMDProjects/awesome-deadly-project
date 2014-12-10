@@ -16,23 +16,39 @@
 package com.example.android.opengl;
 
 import android.app.Activity;
+import android.content.Context;
 import android.opengl.GLSurfaceView;
 import android.os.Bundle;
+import android.util.DisplayMetrics;
 
 public class OpenGLES20Activity extends Activity {
 
-    private GLSurfaceView mGLView;
+    private MyGLSurfaceView mGLView;
+   // private Context context;
+    private MyGLRenderer mRenderer;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        setContentView(R.layout.main);
         // Create a GLSurfaceView instance and set it
         // as the ContentView for this Activity
-        mGLView = new MyGLSurfaceView(this);
+        //mGLView = new MyGLSurfaceView(this);
+        mGLView = (MyGLSurfaceView)findViewById(R.id.gl_surface_view);
        // setContentView(R.layout.main);
-        setContentView(mGLView);
+        //setContentView(mGLView);
 
+
+        mGLView.setEGLContextClientVersion(2);
+
+        final DisplayMetrics displayMetrics = new DisplayMetrics();
+        getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
+
+        // Set the Renderer for drawing on the GLSurfaceView
+        mRenderer = new MyGLRenderer(this);
+       // mGLView.setRenderer(mRenderer, displayMetrics.density);
+        mGLView.setRenderer(mRenderer, displayMetrics.density);
     }
 
     @Override

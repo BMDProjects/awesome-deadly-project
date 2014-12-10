@@ -14,9 +14,9 @@ public class Light {
     private int mPointProgramHandle;
 
     public Light() {
-        final int pointVertexShaderHandle = MyGLRenderer.loadShader(GLES20.GL_VERTEX_SHADER, shaders.getPointVertexShader());
-        final int pointFragmentShaderHandle = MyGLRenderer.loadShader(GLES20.GL_FRAGMENT_SHADER, shaders.getPointFragmentShader());
-        mPointProgramHandle = MyGLRenderer.createAndLinkProgram(pointVertexShaderHandle, pointFragmentShaderHandle,
+        final int pointVertexShaderHandle = Shaders.loadShader(GLES20.GL_VERTEX_SHADER, shaders.getPointVertexShader());
+        final int pointFragmentShaderHandle = Shaders.loadShader(GLES20.GL_FRAGMENT_SHADER, shaders.getPointFragmentShader());
+        mPointProgramHandle = Shaders.createAndLinkProgram(pointVertexShaderHandle, pointFragmentShaderHandle,
                 new String[]{"a_Position"});
     }
 

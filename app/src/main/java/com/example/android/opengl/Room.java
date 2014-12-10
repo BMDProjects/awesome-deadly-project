@@ -1,5 +1,6 @@
 package com.example.android.opengl;
 
+import android.content.Context;
 import android.opengl.GLES20;
 import android.opengl.Matrix;
 
@@ -28,6 +29,12 @@ public class Room {
     private int mLightPosHandle5;
     private int distanceCorrectionHandle;
     private int mNormalHandle;
+
+    private int mTextureDataHandle;
+    private int mTextureCoordinateHandle;
+    private int mTextureUniformHandle;
+    private final FloatBuffer mCubeTextureCoordinates;
+    private final int mTextureCoordinateDataSize = 2;
 
     public int delayer = 20;
 
@@ -105,13 +112,13 @@ public class Room {
                     0.0f, 1.0f, 0.0f, 1.0f,
                     0.0f, 1.0f, 0.0f, 1.0f,
 
-                    // Back face (blue)
-                    0.0f, 0.0f, 1.0f, 1.0f,
-                    0.0f, 0.0f, 1.0f, 1.0f,
-                    0.0f, 0.0f, 1.0f, 1.0f,
-                    0.0f, 0.0f, 1.0f, 1.0f,
-                    0.0f, 0.0f, 1.0f, 1.0f,
-                    0.0f, 0.0f, 1.0f, 1.0f,
+                    // Back face (brown)
+                    0.8f, 0.53f, 0.24f, 1.0f,
+                    0.8f, 0.53f, 0.24f, 1.0f,
+                    0.8f, 0.53f, 0.24f, 1.0f,
+                    0.8f, 0.53f, 0.24f, 1.0f,
+                    0.8f, 0.53f, 0.24f, 1.0f,
+                    0.8f, 0.53f, 0.24f, 1.0f,
 
                     // Left face (yellow)
                     1.0f, 1.0f, 0.0f, 1.0f,
@@ -189,12 +196,65 @@ public class Room {
                     0.0f, 1.0f, 0.0f
             };
 
+    final float[] cubeTextureCoordinateData =
+            {
+                    // Front face
+                    0.0f, 0.0f,
+                    1.0f, 0.0f,
+                    0.0f, 1.0f,
+                    0.0f, 1.0f,
+                    1.0f, 0.0f,
+                    1.0f, 1.0f,
+
+                    // Right face
+                    0.0f, 0.0f,
+                    1.0f, 0.0f,
+                    0.0f, 1.0f,
+                    0.0f, 1.0f,
+                    1.0f, 0.0f,
+                    1.0f, 1.0f,
+
+                    // Back face
+                    0.0f, 0.0f,
+                    1.0f, 0.0f,
+                    0.0f, 1.0f,
+                    0.0f, 1.0f,
+                    1.0f, 0.0f,
+                    1.0f, 1.0f,
+
+                    // Left face
+                    0.0f, 0.0f,
+                    1.0f, 0.0f,
+                    0.0f, 1.0f,
+                    0.0f, 1.0f,
+                    1.0f, 0.0f,
+                    1.0f, 1.0f,
+
+                    // Top face
+                    0.0f, 0.0f,
+                    1.0f, 0.0f,
+                    0.0f, 1.0f,
+                    0.0f, 1.0f,
+                    1.0f, 0.0f,
+                    1.0f, 1.0f,
+
+                    // Bottom face
+                    0.0f, 0.0f,
+                    1.0f, 0.0f,
+                    0.0f, 1.0f,
+                    0.0f, 1.0f,
+                    1.0f, 0.0f,
+                    1.0f, 1.0f,
+            };
+
 
     private final int vertexStride = COORDS_PER_VERTEX * 4; // 4 bytes per vertex
 
     public float[] color = {0.0f, 1.0f, 1.0f, 0.0f};
 
-    public Room() {
+    public Room(Context context) {
+        mTextureDataHandle = TextureHelper.loadTexture(context, R.drawable.bumpy_bricks_public_domain);
+
         mCubePositions = ByteBuffer.allocateDirect(cubePositionData.length * 4)
                 .order(ByteOrder.nativeOrder()).asFloatBuffer();
         mCubePositions.put(cubePositionData).position(0);
@@ -207,10 +267,14 @@ public class Room {
                 .order(ByteOrder.nativeOrder()).asFloatBuffer();
         mCubeNormals.put(cubeNormalData).position(0);
 
-        int perPixelVertexShader = MyGLRenderer.loadShader(GLES20.GL_VERTEX_SHADER, shaders.getVertexShader(4));
-        int perPixelfragmentShader = MyGLRenderer.loadShader(GLES20.GL_FRAGMENT_SHADER, shaders.getFragmentShader(4));
-        mProgramPerPixel = MyGLRenderer.createAndLinkProgram(perPixelVertexShader, perPixelfragmentShader,
-                new String[]{"a_Position",  "a_Color", "a_Normal"});
+        mCubeTextureCoordinates = ByteBuffer.allocateDirect(cubeTextureCoordinateData.length * 4)
+                .order(ByteOrder.nativeOrder()).asFloatBuffer();
+        mCubeTextureCoordinates.put(cubeTextureCoordinateData).position(0);
+
+        int perPixelTextureVertexShader = Shaders.loadShader(GLES20.GL_VERTEX_SHADER, shaders.getVertexShader(5));
+        int perPixelTexturefragmentShader = Shaders.loadShader(GLES20.GL_FRAGMENT_SHADER, shaders.getFragmentShader(5));
+        mProgramPerPixel = Shaders.createAndLinkProgram(perPixelTextureVertexShader, perPixelTexturefragmentShader,
+                new String[]{"a_Position",  "a_Color", "a_Normal", "a_TexCoordinate"});
     }
 
     private final int mPositionDataSize = 3;
@@ -225,11 +289,16 @@ public class Room {
         Matrix.setIdentityM(mMVPMatrix, 0);
         Matrix.setIdentityM(mMVMatrix, 0);
 
+        GLES20.glActiveTexture(GLES20.GL_TEXTURE0);
+        GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, mTextureDataHandle);
+        GLES20.glUniform1i(mTextureUniformHandle, 0);
+        GLES20.glGenerateMipmap(GLES20.GL_TEXTURE_2D);
+
         GLES20.glEnable(GLES20.GL_CULL_FACE);
 
         mMVPMatrixHandle = GLES20.glGetUniformLocation(mProgramPerPixel, "u_MVPMatrix");
         mMVMatrixHandle = GLES20.glGetUniformLocation(mProgramPerPixel, "u_MVMatrix");
-
+        mTextureUniformHandle = GLES20.glGetUniformLocation(mProgramPerPixel, "u_Texture");
         mLightPosHandle0 = GLES20.glGetUniformLocation(mProgramPerPixel, "u_LightPos0");
         mLightPosHandle1 = GLES20.glGetUniformLocation(mProgramPerPixel, "u_LightPos1");
         mLightPosHandle2 = GLES20.glGetUniformLocation(mProgramPerPixel, "u_LightPos2");
@@ -237,9 +306,11 @@ public class Room {
         mLightPosHandle4 = GLES20.glGetUniformLocation(mProgramPerPixel, "u_LightPos4");
         mLightPosHandle5 = GLES20.glGetUniformLocation(mProgramPerPixel, "u_LightPos5");
 
+        mTextureCoordinateHandle = GLES20.glGetAttribLocation(mProgramPerPixel, "a_TexCoordinate");
         mPositionHandle = GLES20.glGetAttribLocation(mProgramPerPixel, "a_Position");
         mColorHandle = GLES20.glGetAttribLocation(mProgramPerPixel, "a_Color");
         mNormalHandle = GLES20.glGetAttribLocation(mProgramPerPixel, "a_Normal");
+
 
         //Pass in vertex position information
         mCubePositions.position(0);
@@ -258,6 +329,12 @@ public class Room {
         GLES20.glVertexAttribPointer(mNormalHandle, mNormalDataSize, GLES20.GL_FLOAT, false,
                 0, mCubeNormals);
         GLES20.glEnableVertexAttribArray(mNormalHandle);
+
+        mCubeTextureCoordinates.position(0);
+        GLES20.glVertexAttribPointer(mTextureCoordinateHandle, mTextureCoordinateDataSize, GLES20.GL_FLOAT, false,
+                0, mCubeTextureCoordinates);
+
+        GLES20.glEnableVertexAttribArray(mTextureCoordinateHandle);
 
         float[] scale_matrix = new float[16];
         float[] scale = {cubeScale,cubeScale,cubeScale};

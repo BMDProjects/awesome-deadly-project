@@ -5,6 +5,6 @@
     <eat-comment />
 
     <string name="app_name">The Dolphin Project</string>
-    <string name="hello">Hello, OpenGL ES 2.0!</string>
+    <string name="hello">Camera</string>
 
 </resources>

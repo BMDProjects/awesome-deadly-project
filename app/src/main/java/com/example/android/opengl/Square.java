@@ -95,10 +95,10 @@ public class Square {
         drawListBuffer.position(0);
 
         // prepare shaders and OpenGL program
-        int vertexShader = MyGLRenderer.loadShader(
+        int vertexShader = Shaders.loadShader(
                 GLES20.GL_VERTEX_SHADER,
                 vertexShaderCode);
-        int fragmentShader = MyGLRenderer.loadShader(
+        int fragmentShader = Shaders.loadShader(
                 GLES20.GL_FRAGMENT_SHADER,
                 fragmentShaderCode);
 
