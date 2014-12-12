@@ -6,6 +6,9 @@
 
     <string name="Camera">Camera</string>
     <string name="Control">Control</string>
+    <string name="Decrease">-</string>
+    <string name="Dolphin">Dlph</string>
+    <string name="Increase">+</string>
     <string name="app_name">The Dolphin Project</string>
 
 </resources>

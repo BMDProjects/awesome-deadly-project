@@ -342,19 +342,9 @@ public class Room {
         Matrix.scaleM(scale_matrix, 0, scale[0], scale[1], scale[2]);
         Matrix.multiplyMM(modelMatrix, 0, modelMatrix , 0, scale_matrix, 0);
 
-        //view times model is the model view matrix
-        // Matrix.multiplyMM(mMVMatrix, 0, modelMatrix , 0, MyGLRenderer.mViewMatrix, 0);
-        //why does this matter the order??????????
         Matrix.multiplyMM(mMVMatrix, 0, MyGLRenderer.mViewMatrix  , 0, modelMatrix, 0);
         // Pass in the modelview matrix.
         GLES20.glUniformMatrix4fv(mMVMatrixHandle, 1, false, mMVMatrix, 0);
-
-//why does it only shine after modelview matrix is sent in and then scaling happens
-        /*float[] scale_matrix = new float[16];
-        float[] scale = {cubeScale,cubeScale,cubeScale};
-        Matrix.setIdentityM(scale_matrix, 0);
-        Matrix.scaleM(scale_matrix, 0, scale[0], scale[1], scale[2]);
-        Matrix.multiplyMM(mMVMatrix, 0, mMVMatrix , 0, scale_matrix, 0);*/
 
         Matrix.multiplyMM(mMVPMatrix, 0, MyGLRenderer.mProjectionMatrix, 0, mMVMatrix, 0);
         // Pass in the combined matrix.

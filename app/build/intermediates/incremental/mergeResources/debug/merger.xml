@@ -9,6 +9,11 @@
                 qualifiers=""
                 type="drawable" />
             <file
+                name="dolphintexture"
+                path="C:\Users\Ben\AndroidStudioProjects\awesome-deadly-project-master\app\src\main\res\drawable\dolphintexture.jpg"
+                qualifiers=""
+                type="drawable" />
+            <file
                 name="ic_launcher"
                 path="C:\Users\Ben\AndroidStudioProjects\awesome-deadly-project-master\app\src\main\res\drawable\ic_launcher.png"
                 qualifiers=""
@@ -29,6 +34,11 @@
                 qualifiers=""
                 type="raw" />
             <file
+                name="fulltexturedolphin"
+                path="C:\Users\Ben\AndroidStudioProjects\awesome-deadly-project-master\app\src\main\res\raw\fulltexturedolphin.obj"
+                qualifiers=""
+                type="raw" />
+            <file
                 name="newkey"
                 path="C:\Users\Ben\AndroidStudioProjects\awesome-deadly-project-master\app\src\main\res\raw\newkey.obj"
                 qualifiers=""
@@ -46,6 +56,12 @@
                 <string name="Control" >Control
                 </string>
                 <string name="app_name" >The Dolphin Project
+                </string>
+                <string name="Decrease" >-
+                </string>
+                <string name="Increase" >+
+                </string>
+                <string name="Dolphin" >Dlph
                 </string>
             </file>
         </source>

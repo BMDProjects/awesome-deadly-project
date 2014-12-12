@@ -30,35 +30,6 @@ public class OBJParser {
         context = ctx;
     }
 
-    /*public static String readTextFileFromRawResource(final Context context,
-                                                     final int resourceId)
-    {
-        final InputStream inputStream = context.getResources().openRawResource(
-                resourceId);
-        final InputStreamReader inputStreamReader = new InputStreamReader(
-                inputStream);
-        final BufferedReader bufferedReader = new BufferedReader(
-                inputStreamReader);
-
-        String nextLine;
-        final StringBuilder body = new StringBuilder();
-
-        try
-        {
-            while ((nextLine = bufferedReader.readLine()) != null)
-            {
-                body.append(nextLine);
-                body.append('\n');
-            }
-        }
-        catch (IOException e)
-        {
-            return null;
-        }
-
-        return body.toString();
-    }*/
-
     public Dolphin parseOBJ(final int resourceId) {
         String line = null;
 
@@ -120,7 +91,7 @@ public class OBJParser {
             TDModelPart model=new TDModelPart(faces, vtPointer, vnPointer, m,vn);
             parts.add(model);*/
         //}
-        Dolphin dolphin = new Dolphin(v, vn, vt, faces);
+        Dolphin dolphin = new Dolphin(v, vn, vt, faces, context);
         Log.v("models", dolphin.toString());
         return dolphin;
     }

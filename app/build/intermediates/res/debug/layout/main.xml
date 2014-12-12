@@ -13,18 +13,39 @@
         android:layout_gravity="bottom|center_horizontal"
         android:orientation="horizontal">
         <Button
-            android:id="@+id/button_set_min_filter"
+            android:id="@+id/decrease"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/Decrease"
+            android:onClick="decrease"
+            />
+        <Button
+            android:id="@+id/Camera"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/Camera"
             android:onClick="Camera"
             />
         <Button
-            android:id="@+id/button_set_mag_filter"
+            android:id="@+id/Control"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/Control"
             android:onClick="Control"/>
+        <Button
+            android:id="@+id/increase"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/Increase"
+            android:onClick="increase"
+          />
+        <Button
+            android:id="@+id/dolphin"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/Dolphin"
+            android:onClick="dolphinChange"
+            />
     </LinearLayout>
 
 </FrameLayout><!-- From: file:/C:/Users/Ben/AndroidStudioProjects/awesome-deadly-project-master/app/src/main/res/layout/main.xml -->

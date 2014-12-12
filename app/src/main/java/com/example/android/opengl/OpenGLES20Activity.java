@@ -40,17 +40,38 @@ public class OpenGLES20Activity extends Activity {
        // setContentView(R.layout.main);
         //setContentView(mGLView);
 
-        final Button button = (Button) findViewById(R.id.button_set_min_filter);
-        button.setOnClickListener(new View.OnClickListener() {
+        final Button camera = (Button) findViewById(R.id.Camera);
+        camera.setOnClickListener(new View.OnClickListener() {
               public void onClick(View v) {
                   Camera();
               }
           });
 
-        final Button button2 = (Button) findViewById(R.id.button_set_mag_filter);
-        button2.setOnClickListener(new View.OnClickListener() {
+        final Button control = (Button) findViewById(R.id.Control);
+        control.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 changeControl();
+            }
+        });
+
+        final Button decrease = (Button) findViewById(R.id.decrease);
+        decrease.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                decrease();
+            }
+        });
+
+        final Button increase = (Button) findViewById(R.id.increase);
+        increase.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                increase();
+            }
+        });
+
+        final Button dolphin = (Button) findViewById(R.id.dolphin);
+        dolphin.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                dolphinChange();
             }
         });
 
@@ -70,10 +91,35 @@ public class OpenGLES20Activity extends Activity {
     }
 
     public void changeControl() {
-        if (mRenderer.camera.control == true) mRenderer.camera.control = false;
+        if (MyGLRenderer.control == true) {
+            MyGLRenderer.camera.vectorReached = false;
+            MyGLRenderer.control = false;
+            MyGLRenderer.camera.state = 0;
+        }
         else {
-            mRenderer.camera.control = true;
-            mRenderer.camera.state = 3;
+            MyGLRenderer.camera.vectorReached = false;
+            MyGLRenderer.control = true;
+            MyGLRenderer.camera.state = 3;
+        }
+    }
+
+    public void increase() {
+        if(MyGLRenderer.getDolphinSpeed() < 10.0f) mRenderer.setDolphinSpeed(MyGLRenderer.getDolphinSpeed() + 0.1f);
+    }
+
+    public void decrease() {
+        if(!MyGLRenderer.approxEqual(0.0, MyGLRenderer.getDolphinSpeed(), 0.05f)) {
+            MyGLRenderer.setDolphinSpeed(MyGLRenderer.getDolphinSpeed() - 0.1f);
+        }
+        else MyGLRenderer.setDolphinSpeed(0.0f);
+    }
+
+    public void dolphinChange() {
+        if (MyGLRenderer.dolphinFollow == true) {
+            MyGLRenderer.dolphinFollow = false;
+        }
+        else {
+            MyGLRenderer.dolphinFollow = true;
         }
     }
 

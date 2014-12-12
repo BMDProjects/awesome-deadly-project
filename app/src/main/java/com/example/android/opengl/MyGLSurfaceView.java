@@ -34,15 +34,7 @@ public class MyGLSurfaceView extends GLSurfaceView {
 
     public MyGLSurfaceView(Context context, MyGLRenderer renderer) {
         super(context);
-        // Set the Renderer for drawing on the GLSurfaceView
-        //mRenderer = new MyGLRenderer(context);
-        //setRenderer(renderer);
-        // mRenderer = renderer;
-        // Create an OpenGL ES 2.0 context.
-       /* setEGLContextClientVersion(2);
-*/
-        // Render the view only when there is a change in the drawing data
-        // setRenderMode(GLSurfaceView.RENDERMODE_WHEN_DIRTY);
+
         setRenderMode(GLSurfaceView.RENDERMODE_CONTINUOUSLY);
     }
 
@@ -75,60 +67,38 @@ public class MyGLSurfaceView extends GLSurfaceView {
         float x = e.getX();
         float y = e.getY();
 
+        if (MyGLRenderer.control) {
+            if (e.getAction() == MotionEvent.ACTION_DOWN) {
+                float xCoord = (float) (2.0f * (x / getWidth()) - 1.0);
+                float yCoord = (float) (2.0f * (y / getHeight()) - 1.0);
 
-        // if (MyGLRenderer.camera.control) {
-        if (e.getAction() == MotionEvent.ACTION_DOWN) {
-            final float angularSpeed = 0.01f;
-            float xCoord = (float) (2.0f * (x / getWidth()) - 1.0);
-            float yCoord = (float) (2.0f * (y / getHeight()) - 1.0);
-            setRenderMode(GLSurfaceView.RENDERMODE_WHEN_DIRTY);
-            if (yCoord >= -1 && yCoord <= -0.5 && xCoord <= 0.5 && xCoord >= -0.5f) {
-                queueEvent(new Runnable() {
-                    @Override
-                    public void run() {
-                        mRenderer.setXyCurrAngle(MyGLRenderer.getXyCurrAngle() + angularSpeed);
-                    }
-                });
+                if (yCoord >= -1 && yCoord <= -0.5 && xCoord <= 0.5 && xCoord >= -0.5f) {
+                    mRenderer.rotatingUp = true;
+                    return true;
+                } else mRenderer.rotatingUp = false;
+
+                if (yCoord >= 0.3f && yCoord <= 0.8f && xCoord <= 0.5f && xCoord >= -0.5f) {
+                    mRenderer.rotatingDown = true;
+                    return true;
+                } else mRenderer.rotatingDown = false;
+
+                if (yCoord >= -0.5f && yCoord <= 0.5f && xCoord <= -0.5f && xCoord >= -1.0f) {
+                    mRenderer.rotatingLeft = true;
+                    return true;
+                } else mRenderer.rotatingLeft = false;
+
+                if (yCoord >= -0.5f && yCoord <= 0.5f && xCoord <= 1.0f && xCoord >= 0.5f) {
+                    mRenderer.rotatingRight = true;
+                    return true;
+                } else mRenderer.rotatingRight = false;
+
+            } else if (e.getAction() == MotionEvent.ACTION_UP) {
+                mRenderer.rotatingUp = false;
+                mRenderer.rotatingDown = false;
+                mRenderer.rotatingLeft = false;
+                mRenderer.rotatingRight = false;
+                return true;
             }
-
-            requestRender();
-            setRenderMode(GLSurfaceView.RENDERMODE_CONTINUOUSLY);
-            return true;
-
-/*                float dx = x - mPreviousX;
-                float dy = y - mPreviousY;
-
-               //reverse direction of rotation above the mid-line
-                if (y > getHeight() / 2) {
-                    dx = dx * -1 ;
-                }
-
-                // reverse direction of rotation to left of the mid-line
-                if (x < getWidth() / 2) {
-                    dy = dy * -1 ;
-                }
-
-                setRenderMode(GLSurfaceView.RENDERMODE_WHEN_DIRTY);
-
-               float sceneY = (y/1280)*-2.0f + 1.0f;
-               float sceneX = -((x/720)*-2.0f + 0.5f);
-                mRenderer.x = sceneX;
-                mRenderer.y = sceneY;
-
-                //requestRender();
-
-
-
-                mRenderer.setAngle(
-                        mRenderer.getAngle() +
-                        ((dx + dy) * TOUCH_SCALE_FACTOR));  // = 180.0f / 320
-                requestRender();
-                setRenderMode(GLSurfaceView.RENDERMODE_CONTINUOUSLY);*/
-
-            // }
-            // mPreviousX = x;
-            // mPreviousY = y;
-
         }
         return super.onTouchEvent(e);
     }
